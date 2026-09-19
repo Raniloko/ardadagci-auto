@@ -73,8 +73,8 @@
 }
 
 :root {
-  --radius: 0.25rem;
-  --background: oklch(0.995 0.002 80);
+  --radius: 0.75rem;
+  --background: oklch(1 0 0);
   --foreground: oklch(0.16 0.008 70);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
@@ -86,7 +86,7 @@
   --secondary-foreground: oklch(0.17 0.008 70);
   --muted: oklch(0.96 0.006 80);
   --muted-foreground: oklch(0.49 0.012 70);
-  --accent: oklch(0.8 0.16 88);
+  --accent: oklch(0.96 0 0);
   --accent-foreground: oklch(0.17 0.008 70);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
@@ -169,15 +169,15 @@
   button, a { -webkit-tap-highlight-color: transparent; }
 }
 
-@utility site-shell { width: min(100% - 2rem, 90rem); margin-inline: auto; }
-@utility section-space { padding-block: clamp(5rem, 9vw, 9rem); }
-@utility eyebrow { font-size: .68rem; line-height: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: .18em; }
+@utility site-shell { width: min(100% - 2rem, 82rem); margin-inline: auto; }
+@utility section-space { padding-block: clamp(2.75rem, 4vw, 4rem); }
+@utility eyebrow { font-size: .58rem; line-height: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .18em; }
 @utility signature { font-family: "Mrs Saint Delafield", cursive; }
 @utility nav-link { position: relative; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-foreground); transition: color .2s ease; &::after { content: ""; position: absolute; inset-inline: 0; bottom: -.55rem; height: 1px; background: var(--foreground); transform: scaleX(0); transform-origin: left; transition: transform .25s ease; } &:hover { color: var(--foreground); } &:hover::after { transform: scaleX(1); } }
 @utility bg-hero-scrim { background: linear-gradient(90deg, color-mix(in oklab, var(--hero) 92%, transparent) 0%, color-mix(in oklab, var(--hero) 65%, transparent) 34%, transparent 70%); }
 @utility bg-video-scrim { background: linear-gradient(0deg, color-mix(in oklab, var(--hero) 78%, transparent), transparent 55%); }
-@utility phone-shell { position: relative; margin-inline: auto; width: min(100%, 22rem); aspect-ratio: 9 / 18; border: .55rem solid var(--ink); border-radius: 2.8rem; padding: .2rem; background: var(--ink); box-shadow: 0 2rem 5rem oklch(0.2 0.01 70 / .2); &::before { content: ""; position: absolute; z-index: 2; width: 34%; height: 1.2rem; border-radius: 0 0 1rem 1rem; background: var(--ink); top: 0; left: 33%; } }
-@utility phone-screen { position: relative; height: 100%; overflow: hidden; border-radius: 2rem; }
+@utility phone-shell { position: relative; margin-inline: auto; width: min(100%, 12rem); aspect-ratio: 9 / 18; transform: rotate(-4deg); border: .4rem solid var(--ink); border-radius: 1.7rem; padding: .12rem; background: var(--ink); box-shadow: 0 1rem 2.5rem oklch(0.2 0.01 70 / .16); &::before { content: ""; position: absolute; z-index: 2; width: 34%; height: .7rem; border-radius: 0 0 .7rem .7rem; background: var(--ink); top: 0; left: 33%; } }
+@utility phone-screen { position: relative; height: 100%; overflow: hidden; border-radius: 1.15rem; }
 @utility form-control { height: 2.75rem; width: 100%; border: 1px solid var(--input); background: transparent; padding-inline: .75rem; font-size: .875rem; outline: none; &:focus { border-color: var(--ring); box-shadow: 0 0 0 1px var(--ring); } }
 @keyframes reveal { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
 @utility animate-reveal { animation: reveal .8s cubic-bezier(.2,.7,.2,1) both; }

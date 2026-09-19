@@ -1,28 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { Menu } from "lucide-react";
+import { ChevronDown, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import logoAsset from "@/assets/ardadagci-logo-white.png.asset.json";
 
-const links = [
-  ["Home", "/"], ["Fleet", "/fleet"], ["About", "/about"], ["TikTok", "/tiktok"], ["Reviews", "/reviews"], ["Contact", "/contact"],
-] as const;
+const links = [["HOME", "/"], ["BRANDS", "/fleet"], ["CATEGORIES", "/fleet"], ["CARS", "/fleet"], ["CONTACT US", "/contact"], ["ABOUT US", "/about"], ["BLOGS", "/reviews"]] as const;
 
 export function SiteHeader() {
-  return <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur-md transition-all duration-300">
-    <div className="site-shell grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-4 lg:h-[4.5rem] lg:grid-cols-[1fr_auto_1fr]">
-      <Link to="/" className="min-w-0 justify-self-start" aria-label="ARDADAGCI home"><img src={logoAsset.url} alt="ARDADAGCI Dubai Car Rental" width={220} height={95} className="h-11 w-auto object-contain" /></Link>
-      <nav className="hidden items-center gap-9 lg:flex" aria-label="Primary navigation">
-        {links.map(([label, to]) => <Link key={to} to={to} className="nav-link" activeProps={{ className: "nav-link text-foreground after:scale-x-100" }}>{label}</Link>)}
+  return <header className="vip-header">
+    <div className="vip-nav">
+      <Link to="/" className="vip-logo" aria-label="VIP Rent a Car home"><strong>VIP</strong><small>RENT A CAR</small></Link>
+      <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
+        {links.map(([label, to], i) => <Link key={label} to={to} className="vip-nav-link">{label}{(i === 1 || i === 2) && <ChevronDown className="size-3.5" />}</Link>)}
       </nav>
-      <Button asChild size="sm" className="hidden justify-self-end rounded-full px-5 lg:inline-flex"><Link to="/booking" search={{ car: "" }}>Book Now</Link></Button>
-      <div className="justify-self-end lg:hidden">
-        <Sheet><SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Open menu"><Menu /></Button></SheetTrigger>
-          <SheetContent className="w-full max-w-sm border-l-border p-8"><SheetTitle className="text-left"><img src={logoAsset.url} alt="ARDADAGCI" className="h-12 w-auto" /></SheetTitle>
-            <nav className="mt-16 flex flex-col gap-1">{links.map(([label,to]) => <SheetClose asChild key={to}><Link to={to} className="border-b border-border py-5 text-2xl font-medium">{label}</Link></SheetClose>)}</nav>
-            <Button asChild size="lg" className="mt-8 w-full"><Link to="/booking" search={{ car: "" }}>Book now</Link></Button>
-          </SheetContent>
-        </Sheet>
+      <div className="flex items-center gap-3">
+        <button className="vip-search" aria-label="Search"><Search className="size-4" /></button>
+        <a className="vip-phone hidden sm:inline-flex" href="tel:+971589278720">971 58 927 8720</a>
+        <button className="vip-select hidden sm:inline-flex">AED / EN <ChevronDown className="size-3.5" /></button>
+        <Button asChild size="sm" className="hidden rounded-md bg-[#0862c5] px-3 text-xs font-normal hover:bg-[#0755aa] sm:inline-flex"><Link to="/booking" search={{ car: "" }}>SIGN IN</Link></Button>
+        <div className="lg:hidden"><Sheet><SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Open menu"><Menu /></Button></SheetTrigger><SheetContent><SheetTitle>VIP RENT A CAR</SheetTitle><nav className="mt-8 flex flex-col gap-5">{links.map(([label,to]) => <SheetClose asChild key={label}><Link to={to} className="text-lg">{label}</Link></SheetClose>)}</nav></SheetContent></Sheet></div>
       </div>
     </div>
   </header>;

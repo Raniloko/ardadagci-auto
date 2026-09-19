@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Instagram } from "lucide-react";
-import { whatsappUrl } from "@/lib/site-data";
+import { Instagram, MapPin, Music2 } from "lucide-react";
+import logoAsset from "@/assets/ardadagci-logo-white.png.asset.json";
 
-export function SiteFooter() { return <footer className="bg-ink text-ink-foreground">
-  <div className="site-shell py-16 lg:py-24"><div className="grid gap-14 lg:grid-cols-[1.4fr_.7fr_.7fr]">
-    <div><Link to="/" className="text-xl font-bold tracking-[0.16em]">ARDADAGCI</Link><p className="mt-5 max-w-sm text-sm leading-7 text-ink-muted">Exceptional cars. Personal service. Delivered anywhere in Dubai.</p></div>
-    <div><p className="eyebrow text-ink-muted">Explore</p><div className="mt-5 grid gap-3 text-sm"><Link to="/fleet">Our fleet</Link><Link to="/about">About Arda</Link><Link to="/reviews">Client reviews</Link><Link to="/contact">Contact</Link></div></div>
-    <div><p className="eyebrow text-ink-muted">Connect</p><div className="mt-5 grid gap-3 text-sm"><a href={whatsappUrl()} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2">WhatsApp <ArrowUpRight className="size-3" /></a><Link to="/tiktok" className="inline-flex items-center gap-2"><Instagram className="size-3" /> TikTok showcase</Link><a href="mailto:hello@ardadagci.com">hello@ardadagci.com</a></div></div>
-  </div><div className="mt-16 flex flex-col gap-3 border-t border-ink-line pt-6 text-xs text-ink-muted sm:flex-row sm:justify-between"><p>© 2026 ARDADAGCI Dubai Car Rental.</p><p>Private fleet · Dubai, UAE</p></div></div>
+export function SiteFooter() { return <footer className="border-t border-border bg-background">
+  <div className="site-shell grid gap-8 py-7 text-[.68rem] text-muted-foreground sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+    <Link to="/" className="justify-self-start"><img src={logoAsset.url} alt="ARDADAGCI Dubai Car Rental" width={180} height={78} className="h-10 w-auto" /></Link>
+    <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-foreground" aria-label="Footer navigation"><Link to="/">Home</Link><Link to="/fleet">Fleet</Link><Link to="/about">About</Link><Link to="/tiktok">TikTok</Link><Link to="/reviews">Reviews</Link><Link to="/contact">Contact</Link></nav>
+    <div className="flex flex-wrap items-center gap-4 sm:justify-self-end"><a href="https://www.tiktok.com/" aria-label="TikTok"><Music2 className="size-4"/></a><a href="https://www.instagram.com/" aria-label="Instagram"><Instagram className="size-4"/></a><span className="inline-flex items-center gap-1.5"><MapPin className="size-3.5"/>Dubai, UAE</span><span>© 2026 ARDADAGCI.</span></div>
+  </div>
 </footer>; }

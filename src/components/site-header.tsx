@@ -8,7 +8,7 @@ const links = [["HOME", "/"], ["BRANDS", "/fleet"], ["CATEGORIES", "/fleet"], ["
 export function SiteHeader() {
   return <header className="vip-header">
     <div className="vip-nav">
-      <Link to="/" className="vip-logo" aria-label="VIP Rent a Car home"><strong>VIP</strong><small>RENT A CAR</small></Link>
+      <Link to="/" className="vip-logo" aria-label="Ardadagci home"><img src="/ardadagci-logo.png" alt="Ardadagci Dubai Car Rental" /></Link>
       <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
         {links.map(([label, to], i) => <Link key={label} to={to} className="vip-nav-link">{label}{(i === 1 || i === 2) && <ChevronDown className="size-3.5" />}</Link>)}
       </nav>

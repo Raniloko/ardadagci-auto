@@ -170,7 +170,7 @@
 }
 
 @utility site-shell { width: min(100% - 2rem, 82rem); margin-inline: auto; }
-@utility section-space { padding-block: clamp(3.5rem, 5.5vw, 5.5rem); }
+@utility section-space { padding-block: clamp(2.75rem, 4vw, 4rem); }
 @utility eyebrow { font-size: .58rem; line-height: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .18em; }
 @utility signature { font-family: "Mrs Saint Delafield", cursive; }
 @utility nav-link { position: relative; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted-foreground); transition: color .2s ease; &::after { content: ""; position: absolute; inset-inline: 0; bottom: -.55rem; height: 1px; background: var(--foreground); transform: scaleX(0); transform-origin: left; transition: transform .25s ease; } &:hover { color: var(--foreground); } &:hover::after { transform: scaleX(1); } }

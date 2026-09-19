@@ -24,5 +24,5 @@ function HomePage() {
     </main><footer className="arda-footer"><img src="/ardadagci-logo.png" alt="Ardadagci Dubai Car Rental" /><span>© 2026 ARDADAGCI</span><span><MapPin size={14} /> Dubai, UAE</span></footer>
   </div>;
 }
-\nexport default HomePage;
+export default HomePage;
 

@@ -1,4 +1,4 @@
-import heroImage from "@/assets/hero-lamborghini-dubai.jpg";
+import heroImage from "@/assets/hero-black-lamborghini-dubai.jpg";
 import porscheImage from "@/assets/porsche-911.jpg";
 import g63Image from "@/assets/mercedes-g63.jpg";
 import ferrariImage from "@/assets/ferrari-roma.jpg";
@@ -9,10 +9,10 @@ export const whatsappUrl = (message = "Hello ARDADAGCI, I would like to book a l
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
 export const cars = [
-  { slug: "lamborghini-huracan-evo", brand: "Lamborghini", name: "Huracán EVO", category: "Supercar", hp: "640 HP", transmission: "7-speed DCT", zeroToHundred: "2.9 sec", price: 3900, image: huracanImage, color: "Arancio Borealis", seats: 2, featured: true, description: "A naturally aspirated V10 icon, tuned for the city and alive on every open road." },
-  { slug: "porsche-911-turbo-s", brand: "Porsche", name: "911 Turbo S", category: "Sports", hp: "650 HP", transmission: "8-speed PDK", zeroToHundred: "2.7 sec", price: 3200, image: porscheImage, color: "Jet Black", seats: 4, featured: true, description: "Quietly devastating performance with the composure to make every Dubai mile effortless." },
-  { slug: "mercedes-amg-g63", brand: "Mercedes-AMG", name: "G 63", category: "SUV", hp: "585 HP", transmission: "9-speed Auto", zeroToHundred: "4.4 sec", price: 2800, image: g63Image, color: "Polar White", seats: 5, featured: true, description: "Unmistakable presence, handcrafted V8 power, and first-class comfort for every passenger." },
-  { slug: "ferrari-roma", brand: "Ferrari", name: "Roma", category: "Grand Tourer", hp: "620 HP", transmission: "8-speed DCT", zeroToHundred: "3.4 sec", price: 4200, image: ferrariImage, color: "Argento Nürburgring", seats: 4, featured: true, description: "Contemporary Italian elegance with a front-mid-engine V8 and beautifully measured drama." },
+  { slug: "lamborghini-huracan", brand: "Lamborghini", name: "Huracán", category: "Supercar", hp: "640 HP", transmission: "Automatic", zeroToHundred: "3.2s", price: 1800, image: huracanImage, color: "Arancio Borealis", seats: 2, featured: true, description: "A naturally aspirated V10 icon, tuned for the city and alive on every open road." },
+  { slug: "ferrari-sf90", brand: "Ferrari", name: "SF90", category: "Supercar", hp: "780 HP", transmission: "Automatic", zeroToHundred: "2.5s", price: 2500, image: ferrariImage, color: "Rosso Corsa", seats: 2, featured: true, description: "Electrified Ferrari performance with breathtaking pace and unmistakable Italian presence." },
+  { slug: "mclaren-720s", brand: "McLaren", name: "720S", category: "Supercar", hp: "720 HP", transmission: "Automatic", zeroToHundred: "2.8s", price: 2300, image: porscheImage, color: "Silica White", seats: 2, featured: true, description: "A lightweight supercar shaped by aerodynamics and engineered for effortless speed." },
+  { slug: "rolls-royce-cullinan", brand: "Rolls-Royce", name: "Cullinan", category: "Luxury SUV", hp: "571 HP", transmission: "Automatic", zeroToHundred: "5.2s", price: 3500, image: g63Image, color: "Diamond Black", seats: 5, featured: true, description: "Commanding presence, serene comfort, and uncompromising luxury for every Dubai journey." },
 ];
 
 export const reviews = [

@@ -1,12 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, Gauge, Timer, Workflow } from "lucide-react";
+import { Gauge, MessageCircle, Timer, Workflow } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { cars } from "@/lib/site-data";
-type Car = (typeof cars)[number];
-export function CarCard({ car }: { car: Car }) { return <article className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow duration-300 hover:shadow-lg">
-  <Link to="/fleet/$slug" params={{ slug: car.slug }} className="block overflow-hidden bg-secondary"><img src={car.image} alt={`${car.brand} ${car.name}`} width={1408} height={992} loading="lazy" className="aspect-[1.48] w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" /></Link>
-  <div className="p-4"><h3 className="font-display text-base font-semibold">{car.brand} {car.name}</h3>
-  <div className="mt-3 grid gap-1.5 text-[.68rem] text-muted-foreground"><span className="flex items-center gap-2"><Gauge className="size-3.5"/>{car.hp}</span><span className="flex items-center gap-2"><Workflow className="size-3.5"/>{car.transmission}</span><span className="flex items-center gap-2"><Timer className="size-3.5"/>0–100 km/h {car.zeroToHundred}</span></div>
-  <p className="mt-4 text-xs">From <span className="font-semibold">{car.price.toLocaleString("en-US")} AED</span> / day</p>
-  <Button asChild size="sm" className="mt-4 w-full justify-center rounded-md normal-case"><Link to="/fleet/$slug" params={{ slug: car.slug }}>Rent Now <ArrowUpRight/></Link></Button></div>
-</article>; }
+import { useLanguage } from "@/lib/language";
+import { whatsappUrl, type cars } from "@/lib/site-data";
+type Car=(typeof cars)[number];
+export function CarCard({car}:{car:Car}){const {language}=useLanguage();return <article className="fleet-card"><Link to="/fleet/$slug" params={{slug:car.slug}} className="fleet-card-image"><img src={car.image} alt={`${car.brand} ${car.name}`} loading="lazy"/><span className="deposit-badge">{language==="de"?"0 € Kaution":"No Deposit"}</span></Link><div className="fleet-card-body"><p className="car-brand">{car.brand}</p><h3>{car.name}</h3><div className="car-details"><span><Gauge/>{car.hp}</span><span><Workflow/>{car.transmission}</span><span><Timer/>{car.zeroToHundred}</span></div><div className="car-price"><span>{language==="de"?"ab":"from"}</span><strong>AED {car.price.toLocaleString("en-US")}</strong><span>/ {language==="de"?"Tag":"day"}</span></div><div className="card-actions"><Button asChild><Link to="/fleet/$slug" params={{slug:car.slug}}>{language==="de"?"Details":"Details"}</Link></Button><Button asChild variant="outline"><a href={whatsappUrl(`${language==="de"?"Hallo":"Hello"} ARDADAGCI, ${language==="de"?"ich möchte folgendes Fahrzeug reservieren":"I would like to reserve this vehicle"}: ${car.brand} ${car.name}, AED ${car.price.toLocaleString("en-US")}/${language==="de"?"Tag":"day"}.`)} target="_blank" rel="noreferrer"><MessageCircle/>{language==="de"?"WhatsApp Reservierung":"WhatsApp booking"}</a></Button></div></div></article>}

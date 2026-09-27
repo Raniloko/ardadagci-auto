@@ -7,4 +7,4 @@
 - [x] Fleet list filtered by category, brand, and search
 - [x] Dark vehicle detail and bilingual booking experience
 - [x] Prefilled WhatsApp booking links and floating contact actions
-- [ ] Responsive preview validation
+- [x] Responsive preview validation

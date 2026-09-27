@@ -82,7 +82,7 @@ button { cursor: pointer; }
 .hero-search input { width: 100%; min-width: 0; border: 0; outline: 0; color: var(--foreground); background: transparent; font-size: 17px; }
 .hero-search input::placeholder { color: oklch(0.81 0 0); }
 .hero-search button { width: 66px; height: 66px; flex: 0 0 66px; border-radius: 999px; }
-.hero-ferrari { position: absolute; z-index: 1; right: 0; bottom: -38px; width: 660px; height: 500px; object-fit: contain; image-rendering: auto; filter: drop-shadow(0 32px 32px oklch(0 0 0 / .65)); }
+.hero-ferrari { position: absolute; z-index: 1; right: 0; bottom: -38px; width: 720px; height: 510px; object-fit: contain; image-rendering: auto; filter: drop-shadow(0 32px 32px oklch(0 0 0 / .65)); }
 
 .discovery-section { padding-top: 34px; }
 .discovery-wrap { padding: 22px 0 46px; }
@@ -200,7 +200,7 @@ button { cursor: pointer; }
  .mobile-nav { display: grid; gap: 0; border-top: 1px solid var(--border); background: var(--background); }
  .mobile-nav a { padding: 17px 24px; border-bottom: 1px solid var(--border); }
  .fleet-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
- .hero-ferrari { right: -80px; width: 570px; opacity: .72; }
+ .hero-ferrari { right: -80px; width: 610px; opacity: .72; }
  .vehicle-layout { grid-template-columns: 1fr; } .booking-page { grid-template-columns: 1fr; gap: 45px; } .booking-copy { position: static; }
 }
 
@@ -215,7 +215,7 @@ button { cursor: pointer; }
  .hero-search { height: 72px; margin-top: 45px; }
  .hero-search .location { padding: 0 12px; } .hero-search label { padding: 0 10px; } .hero-search label svg { display: none; }
  .hero-search input { font-size: 15px; } .hero-search button { width: 58px; height: 58px; flex-basis: 58px; }
- .hero-ferrari { right: 50%; bottom: 35px; width: 580px; height: 420px; transform: translateX(50%); opacity: 1; }
+ .hero-ferrari { right: 50%; bottom: 35px; width: 590px; height: 430px; transform: translateX(50%); opacity: 1; }
  .discovery-section { width: 100%; padding: 15px 0 0 38px; }
  .discovery-wrap { padding-bottom: 24px; }
  .slider-label { padding-right: 19px; }

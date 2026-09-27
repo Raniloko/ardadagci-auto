@@ -16,7 +16,6 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FleetRouteImport } from './routes/fleet'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as TiktokRouteImport } from './routes/tiktok'
-import { Route as FleetRouteImport } from './routes/fleet.'
 import { Route as FleetSlugRouteImport } from './routes/fleet.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -54,11 +53,6 @@ const TiktokRoute = TiktokRouteImport.update({
   path: '/tiktok',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FleetRoute = FleetRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => FleetRoute,
-} as any)
 const FleetSlugRoute = FleetSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -73,7 +67,6 @@ export interface FileRoutesByFullPath {
   '/fleet': typeof FleetRouteWithChildren
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
-  '/fleet/': typeof FleetRoute
   '/fleet/$slug': typeof FleetSlugRoute
 }
 export interface FileRoutesByTo {
@@ -81,9 +74,9 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
+  '/fleet': typeof FleetRouteWithChildren
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
-  '/fleet': typeof FleetRoute
   '/fleet/$slug': typeof FleetSlugRoute
 }
 export interface FileRoutesById {
@@ -95,7 +88,6 @@ export interface FileRoutesById {
   '/fleet': typeof FleetRouteWithChildren
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
-  '/fleet/': typeof FleetRoute
   '/fleet/$slug': typeof FleetSlugRoute
 }
 export interface FileRouteTypes {
@@ -108,7 +100,6 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/reviews'
     | '/tiktok'
-    | '/fleet/'
     | '/fleet/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -116,9 +107,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/booking'
     | '/contact'
+    | '/fleet'
     | '/reviews'
     | '/tiktok'
-    | '/fleet'
     | '/fleet/$slug'
   id:
     | '__root__'
@@ -129,7 +120,6 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/reviews'
     | '/tiktok'
-    | '/fleet/'
     | '/fleet/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -194,13 +184,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TiktokRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/fleet/': {
-      id: '/fleet/'
-      path: '/'
-      fullPath: '/fleet/'
-      preLoaderRoute: typeof FleetRouteImport
-      parentRoute: typeof FleetRoute
-    }
     '/fleet/$slug': {
       id: '/fleet/$slug'
       path: '/$slug'
@@ -212,12 +195,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface FleetRouteChildren {
-  FleetRoute: typeof FleetRoute
   FleetSlugRoute: typeof FleetSlugRoute
 }
 
 const FleetRouteChildren: FleetRouteChildren = {
-  FleetRoute: FleetRoute,
   FleetSlugRoute: FleetSlugRoute,
 }
 

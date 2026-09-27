@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Use the shared `LanguageProvider` for German-default bilingual UI so navigation and transactional pages stay synchronized.
+- Keep fleet discovery data centralized in `site-data.ts` and `mkr-assets.ts` so category, brand, search, and booking views use identical vehicle identities.

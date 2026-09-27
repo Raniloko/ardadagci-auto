@@ -1,24 +1,25 @@
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, Menu, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import logoAsset from "@/assets/ardadagci-logo.png.asset.json";
+import { useLanguage } from "@/lib/language";
 
-const links = [["HOME", "/"], ["BRANDS", "/fleet"], ["CATEGORIES", "/fleet"], ["CARS", "/fleet"], ["CONTACT US", "/contact"], ["ABOUT US", "/about"], ["BLOGS", "/reviews"]] as const;
+const links = [
+  ["Start", "Home", "/"], ["Flotte", "Fleet", "/fleet"], ["Über uns", "About", "/about"],
+  ["TikTok", "TikTok", "/tiktok"], ["Bewertungen", "Reviews", "/reviews"], ["Kontakt", "Contact", "/contact"],
+] as const;
 
 export function SiteHeader() {
-  return <header className="vip-header">
-    <div className="vip-nav">
-      <Link to="/" className="vip-logo" aria-label="Ardadagci home"><img src="/ardadagci-logo.png" alt="Ardadagci Dubai Car Rental" /></Link>
-      <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
-        {links.map(([label, to], i) => <Link key={label} to={to} className="vip-nav-link">{label}{(i === 1 || i === 2) && <ChevronDown className="size-3.5" />}</Link>)}
-      </nav>
-      <div className="flex items-center gap-3">
-        <button className="vip-search" aria-label="Search"><Search className="size-4" /></button>
-        <a className="vip-phone hidden sm:inline-flex" href="tel:+971589278720">971 58 927 8720</a>
-        <button className="vip-select hidden sm:inline-flex">AED / EN <ChevronDown className="size-3.5" /></button>
-        <Button asChild size="sm" className="hidden rounded-md bg-[#0862c5] px-3 text-xs font-normal hover:bg-[#0755aa] sm:inline-flex"><Link to="/booking" search={{ car: "" }}>SIGN IN</Link></Button>
-        <div className="lg:hidden"><Sheet><SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Open menu"><Menu /></Button></SheetTrigger><SheetContent><SheetTitle>VIP RENT A CAR</SheetTitle><nav className="mt-8 flex flex-col gap-5">{links.map(([label,to]) => <SheetClose asChild key={label}><Link to={to} className="text-lg">{label}</Link></SheetClose>)}</nav></SheetContent></Sheet></div>
-      </div>
+  const { language, setLanguage } = useLanguage();
+  const [open, setOpen] = useState(false);
+  return <header className="site-header">
+    <div className="header-inner">
+      <button className="menu-trigger" onClick={() => setOpen(!open)} aria-label={open ? "Menü schließen" : "Menü öffnen"}>{open ? <X /> : <Menu />}</button>
+      <nav className="desktop-nav" aria-label="Hauptnavigation">{links.slice(0, 3).map(([de,en,to]) => <Link key={to} to={to}>{language === "de" ? de : en}</Link>)}</nav>
+      <Link to="/" className="center-logo" aria-label="ARDADAGCI Startseite"><img src={logoAsset.url} alt="ARDADAGCI Dubai Car Rental" /></Link>
+      <nav className="desktop-nav desktop-nav-right" aria-label="Weitere Navigation">{links.slice(3).map(([de,en,to]) => <Link key={to} to={to}>{language === "de" ? de : en}</Link>)}</nav>
+      <div className="language-toggle" aria-label="Sprache wählen"><button className={language === "de" ? "active" : ""} onClick={() => setLanguage("de")}>DE</button><button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")}>EN</button></div>
     </div>
+    {open && <nav className="mobile-nav" aria-label="Mobile Navigation">{links.map(([de,en,to]) => <Link key={to} to={to} onClick={() => setOpen(false)}>{language === "de" ? de : en}</Link>)}<Link to="/booking" search={{ car: "" }} onClick={() => setOpen(false)}>{language === "de" ? "Jetzt reservieren" : "Book now"}</Link></nav>}
   </header>;
 }

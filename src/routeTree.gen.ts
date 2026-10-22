@@ -16,7 +16,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FleetRouteImport } from './routes/fleet'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as TiktokRouteImport } from './routes/tiktok'
-import { Route as FleetSlugRouteImport } from './routes/fleet.$slug'
+import { Route as FleetSlugRouteImport } from './routes/fleet_.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,9 +54,9 @@ const TiktokRoute = TiktokRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const FleetSlugRoute = FleetSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => FleetRoute,
+  id: '/fleet_/$slug',
+  path: '/fleet/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -64,7 +64,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
-  '/fleet': typeof FleetRouteWithChildren
+  '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
   '/fleet/$slug': typeof FleetSlugRoute
@@ -74,7 +74,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
-  '/fleet': typeof FleetRouteWithChildren
+  '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
   '/fleet/$slug': typeof FleetSlugRoute
@@ -85,10 +85,10 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
-  '/fleet': typeof FleetRouteWithChildren
+  '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
-  '/fleet/$slug': typeof FleetSlugRoute
+  '/fleet_/$slug': typeof FleetSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,7 +120,7 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/reviews'
     | '/tiktok'
-    | '/fleet/$slug'
+    | '/fleet_/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,9 +128,10 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   BookingRoute: typeof BookingRoute
   ContactRoute: typeof ContactRoute
-  FleetRoute: typeof FleetRouteWithChildren
+  FleetRoute: typeof FleetRoute
   ReviewsRoute: typeof ReviewsRoute
   TiktokRoute: typeof TiktokRoute
+  FleetSlugRoute: typeof FleetSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -184,34 +185,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TiktokRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/fleet/$slug': {
-      id: '/fleet/$slug'
-      path: '/$slug'
+    '/fleet_/$slug': {
+      id: '/fleet_/$slug'
+      path: '/fleet/$slug'
       fullPath: '/fleet/$slug'
       preLoaderRoute: typeof FleetSlugRouteImport
-      parentRoute: typeof FleetRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface FleetRouteChildren {
-  FleetSlugRoute: typeof FleetSlugRoute
-}
-
-const FleetRouteChildren: FleetRouteChildren = {
-  FleetSlugRoute: FleetSlugRoute,
-}
-
-const FleetRouteWithChildren = FleetRoute._addFileChildren(FleetRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   BookingRoute: BookingRoute,
   ContactRoute: ContactRoute,
-  FleetRoute: FleetRouteWithChildren,
+  FleetRoute: FleetRoute,
   ReviewsRoute: ReviewsRoute,
   TiktokRoute: TiktokRoute,
+  FleetSlugRoute: FleetSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

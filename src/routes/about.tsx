@@ -1,2 +1,44 @@
-import { createFileRoute, Link } from "@tanstack/react-router";import { ArrowRight } from "lucide-react";import founderImage from "@/assets/founder-arda.jpg";import { PageIntro } from "@/components/page-intro";import { Button } from "@/components/ui/button";
-export const Route=createFileRoute("/about")({head:()=>({meta:[{title:"About Arda — ARDADAGCI Dubai"},{name:"description",content:"Meet Arda and discover the personal standard behind ARDADAGCI luxury car rental in Dubai."},{property:"og:title",content:"About Arda — ARDADAGCI Dubai"},{property:"og:description",content:"A more personal standard of luxury car rental."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:Page});function Page(){return <><PageIntro eyebrow="Our story" title="Built around trust." copy="A boutique Dubai fleet where every client speaks directly with people who know the cars."/><section className="site-shell pb-24"><div className="grid gap-12 lg:grid-cols-[.82fr_1fr] lg:items-start"><img src={founderImage} alt="Arda, founder of ARDADAGCI" width={1008} height={1312} className="aspect-[.78] w-full object-cover"/><div className="lg:pl-10"><p className="font-display text-3xl leading-snug">“The real luxury is knowing everything has been handled before you arrive.”</p><div className="mt-9 space-y-5 text-base leading-8 text-muted-foreground"><p>After more than a decade in Dubai, Arda saw a gap between impressive cars and genuinely impressive service. ARDADAGCI was created to bring both together.</p><p>Each vehicle is selected for more than a specification sheet. It must feel special, photograph beautifully, and be as rewarding at city speeds as it is on an open road.</p><p>Today, the approach remains deliberately personal: direct communication, carefully prepared cars, clear pricing, and support whenever it is needed.</p></div><p className="signature mt-9 text-5xl">Arda Dagci</p><div className="mt-12 grid grid-cols-2 gap-px bg-border"><Value n="01" title="Curated, never crowded"/><Value n="02" title="Service without scripts"/><Value n="03" title="Condition over compromise"/><Value n="04" title="Dubai knowledge"/></div><Button asChild size="lg" className="mt-9"><Link to="/fleet">Explore the fleet <ArrowRight/></Link></Button></div></div></section></>}function Value({n,title}:{n:string;title:string}){return <div className="bg-background p-5 sm:p-7"><span className="text-xs text-muted-foreground">{n}</span><p className="mt-5 font-medium">{title}</p></div>}
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import founderImage from "@/assets/founder-arda.jpg";
+import { PageIntro } from "@/components/page-intro";
+import { useLanguage } from "@/lib/language";
+import { fleetStats } from "@/lib/site-data";
+
+export const Route = createFileRoute("/about")({
+  head: () => ({
+    meta: [
+      { title: "Über Arda — ARDADAGCI Dubai" },
+      { name: "description", content: "Lernen Sie Arda kennen – der persönliche Standard hinter ARDADAGCI Luxus-Autovermietung in Dubai." },
+      { property: "og:title", content: "Über Arda — ARDADAGCI Dubai" },
+      { property: "og:description", content: "Ein persönlicherer Standard der Luxus-Autovermietung." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Page,
+});
+
+function Page() {
+  const { t } = useLanguage();
+  const values = [t("Kuratiert, nie überladen", "Curated, never crowded"), t("Service ohne Skript", "Service without scripts"), t("Zustand vor Kompromiss", "Condition over compromise"), t("Dubai-Know-how", "Dubai knowledge")];
+  return (
+    <>
+      <PageIntro eyebrow={t("Unsere Geschichte", "Our story")} title={t("Gebaut auf Vertrauen.", "Built around trust.")} copy={t("Eine Boutique-Vermietung in Dubai, bei der jeder Kunde direkt mit Menschen spricht, die die Autos kennen.", "A boutique Dubai rental where every client speaks directly with people who know the cars.")} />
+      <section className="site-shell section about-layout">
+        <img src={founderImage} alt={t("Arda, Gründer von ARDADAGCI", "Arda, founder of ARDADAGCI")} width={1008} height={1312} />
+        <div>
+          <p className="about-quote">{t("„Wahrer Luxus ist das Wissen, dass alles erledigt ist, bevor Sie ankommen.“", "“The real luxury is knowing everything has been handled before you arrive.”")}</p>
+          <div className="about-text">
+            <p>{t("Nach vielen Jahren in Dubai sah Arda eine Lücke zwischen beeindruckenden Autos und wirklich beeindruckendem Service. ARDADAGCI wurde gegründet, um beides zusammenzubringen.", "After many years in Dubai, Arda saw a gap between impressive cars and genuinely impressive service. ARDADAGCI was created to bring both together.")}</p>
+            <p>{t(`Gemeinsam mit unserem Flottenpartner in Dubai bieten wir heute über ${fleetStats.cars} Fahrzeuge aus ${fleetStats.brands} Marken – von Economy bis Hypercar, jedes geprüft und gepflegt.`, `Together with our fleet partner in Dubai we now offer ${fleetStats.cars}+ cars from ${fleetStats.brands} brands – from economy to hypercar, each inspected and maintained.`)}</p>
+            <p>{t("Der Ansatz bleibt bewusst persönlich: direkte Kommunikation, sorgfältig vorbereitete Fahrzeuge, klare Preise und Unterstützung, wann immer sie gebraucht wird.", "The approach remains deliberately personal: direct communication, carefully prepared cars, clear pricing and support whenever it is needed.")}</p>
+          </div>
+          <p className="signature">Arda Dagci</p>
+          <div className="value-grid">{values.map((v, i) => <div key={v}><span>0{i + 1}</span><p>{v}</p></div>)}</div>
+          <Link to="/fleet" className="btn btn-light">{t("Flotte entdecken", "Explore the fleet")}<ArrowRight /></Link>
+        </div>
+      </section>
+    </>
+  );
+}

@@ -1,7 +1,45 @@
 import { Link } from "@tanstack/react-router";
-import { Gauge, MessageCircle, Timer, Workflow } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowUpRight, Fuel, Gauge, MessageCircle, Users } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-import { whatsappUrl, type cars } from "@/lib/site-data";
-type Car=(typeof cars)[number];
-export function CarCard({car}:{car:Car}){const {language}=useLanguage();return <article className="fleet-card"><Link to="/fleet/$slug" params={{slug:car.slug}} className="fleet-card-image"><img src={car.image} alt={`${car.brand} ${car.name}`} loading="lazy"/><span className="deposit-badge">{language==="de"?"0 € Kaution":"No Deposit"}</span></Link><div className="fleet-card-body"><p className="car-brand">{car.brand}</p><h3>{car.name}</h3><div className="car-details"><span><Gauge/>{car.hp}</span><span><Workflow/>{car.transmission}</span><span><Timer/>{car.zeroToHundred}</span></div><div className="car-price"><span>{language==="de"?"ab":"from"}</span><strong>AED {car.price.toLocaleString("en-US")}</strong><span>/ {language==="de"?"Tag":"day"}</span></div><div className="card-actions"><Button asChild><Link to="/fleet/$slug" params={{slug:car.slug}}>{language==="de"?"Details":"Details"}</Link></Button><Button asChild variant="outline"><a href={whatsappUrl(`${language==="de"?"Hallo":"Hello"} ARDADAGCI, ${language==="de"?"ich möchte folgendes Fahrzeug reservieren":"I would like to reserve this vehicle"}: ${car.brand} ${car.name}, AED ${car.price.toLocaleString("en-US")}/${language==="de"?"Tag":"day"}.`)} target="_blank" rel="noreferrer"><MessageCircle/>{language==="de"?"WhatsApp Reservierung":"WhatsApp booking"}</a></Button></div></div></article>}
+import { formatEur } from "@/lib/pricing";
+import { carTitle, categoryLabel, colorLabel, whatsappUrl, type Car } from "@/lib/site-data";
+
+export function bookingMessage(car: Car, language: "de" | "en") {
+  return language === "de"
+    ? `Hallo ARDADAGCI, ich interessiere mich für den ${carTitle(car)} (${colorLabel(car.color, "de")}) für ${formatEur(car.price, "de")}/Tag. Ist er verfügbar?`
+    : `Hello ARDADAGCI, I'm interested in the ${carTitle(car)} (${car.color ?? "-"}) for ${formatEur(car.price, "en")}/day. Is it available?`;
+}
+
+export function CarCard({ car, eager = false }: { car: Car; eager?: boolean }) {
+  const { language, t } = useLanguage();
+  return (
+    <article className="car-card">
+      <Link to="/fleet/$slug" params={{ slug: car.slug }} className="car-card-media" aria-label={carTitle(car)}>
+        <img src={car.image} alt={`${carTitle(car)} ${colorLabel(car.color, language)}`} loading={eager ? "eager" : "lazy"} decoding="async" />
+        <span className="car-card-badges">
+          {car.deposit === "none" && <span className="chip chip-solid">{t("0 € Kaution", "No deposit")}</span>}
+          <span className="chip">{categoryLabel(car.category, language)}</span>
+        </span>
+        <span className="car-card-open"><ArrowUpRight /></span>
+      </Link>
+      <div className="car-card-body">
+        <div className="car-card-title">
+          <p>{car.brand}{car.color ? ` · ${colorLabel(car.color, language)}` : ""}</p>
+          <h3><Link to="/fleet/$slug" params={{ slug: car.slug }}>{car.name}</Link></h3>
+        </div>
+        <ul className="car-card-specs">
+          {car.seats && <li><Users />{car.seats} {t("Sitze", "seats")}</li>}
+          {car.zeroToHundred && <li><Gauge />{String(car.zeroToHundred).replace(".", language === "de" ? "," : ".")} s</li>}
+          {car.engine && <li><Fuel />{car.engine.length > 12 ? car.fuel : car.engine}</li>}
+        </ul>
+        <div className="car-card-footer">
+          <div className="price"><small>{t("ab", "from")}</small><strong>{formatEur(car.price, language)}</strong><small>/ {t("Tag", "day")}</small></div>
+          <div className="car-card-actions">
+            <a className="icon-btn whatsapp" href={whatsappUrl(bookingMessage(car, language))} target="_blank" rel="noreferrer" aria-label={t(`${carTitle(car)} per WhatsApp anfragen`, `Ask about ${carTitle(car)} on WhatsApp`)}><MessageCircle /></a>
+            <Link to="/fleet/$slug" params={{ slug: car.slug }} className="btn btn-light btn-sm">{t("Details", "Details")}</Link>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}

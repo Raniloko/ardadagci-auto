@@ -1,32 +1,41 @@
-import hero from "@/assets/mkr/hero-ferrari.png.asset.json";
-import luxury from "@/assets/mkr/category-luxury.webp.asset.json";
-import sports from "@/assets/mkr/category-sports.webp.asset.json";
-import suv from "@/assets/mkr/category-suv.webp.asset.json";
-import exotic from "@/assets/mkr/category-exotic.webp.asset.json";
-import convertible from "@/assets/mkr/category-convertible.webp.asset.json";
-import economy from "@/assets/mkr/category-economy.webp.asset.json";
-import lamborghini from "@/assets/mkr/brand-lamborghini.webp.asset.json";
-import bentley from "@/assets/mkr/brand-bentley.webp.asset.json";
-import ferrari from "@/assets/mkr/brand-ferrari.webp.asset.json";
-import rollsRoyce from "@/assets/mkr/brand-rolls-royce.webp.asset.json";
-import porsche from "@/assets/mkr/brand-porsche.webp.asset.json";
-import mercedes from "@/assets/mkr/brand-mercedes.webp.asset.json";
-import audi from "@/assets/mkr/brand-audi.webp.asset.json";
-import bmw from "@/assets/mkr/brand-bmw.webp.asset.json";
-import mclaren from "@/assets/mkr/brand-mclaren.webp.asset.json";
+import heroImage from "@/assets/hero-black-lamborghini-dubai.jpg";
 
-export const mkrHero = hero.url;
+// Visual assets supplied by Masterkey Rent A Car (MKR) via their CDN.
+const CDN = "https://cdn.mkrentacar.com/wp-content/uploads";
+
+export const mkrHero = heroImage;
+
 export const categoryTiles = [
-  { id: "Luxury", de: "Luxury", en: "Luxury", image: luxury.url },
-  { id: "Sports", de: "Sportwagen", en: "Sports", image: sports.url },
-  { id: "SUV", de: "SUV", en: "SUV", image: suv.url },
-  { id: "Exotic", de: "Exotisch", en: "Exotic", image: exotic.url },
-  { id: "Convertible", de: "Cabrio", en: "Convertible", image: convertible.url },
-  { id: "Economy", de: "Economy", en: "Economy", image: economy.url },
+  { id: "Luxury", de: "Luxus", en: "Luxury", image: `${CDN}/2026/01/luxury-2-1.webp` },
+  { id: "Sports", de: "Sportwagen", en: "Sports", image: `${CDN}/2026/01/sport.webp` },
+  { id: "SUV", de: "SUV", en: "SUV", image: `${CDN}/2026/01/suv-.webp` },
+  { id: "Exotic", de: "Exotisch", en: "Exotic", image: `${CDN}/2026/01/exotic-cars.webp` },
+  { id: "Convertible", de: "Cabrio", en: "Convertible", image: `${CDN}/2026/01/convertible-3.webp` },
+  { id: "Economy", de: "Economy", en: "Economy", image: `${CDN}/2026/01/economy-1.webp` },
 ] as const;
+
+export type CategoryId = (typeof categoryTiles)[number]["id"];
+
 export const brandTiles = [
-  { id: "Lamborghini", image: lamborghini.url }, { id: "Bentley", image: bentley.url },
-  { id: "Ferrari", image: ferrari.url }, { id: "Rolls-Royce", image: rollsRoyce.url },
-  { id: "Porsche", image: porsche.url }, { id: "Mercedes", image: mercedes.url },
-  { id: "Audi", image: audi.url }, { id: "BMW", image: bmw.url }, { id: "McLaren", image: mclaren.url },
+  { id: "Lamborghini", image: `${CDN}/2025/07/lamborghini-1.png` },
+  { id: "Ferrari", image: `${CDN}/2025/07/ferrari-1.png` },
+  { id: "Rolls-Royce", image: `${CDN}/2025/07/cdrp0674jG-1.png` },
+  { id: "Bentley", image: `${CDN}/2025/03/1unVcJlu27-1.png` },
+  { id: "McLaren", image: `${CDN}/2025/05/1000215839.png` },
+  { id: "Porsche", image: `${CDN}/2025/07/porsche-1.png` },
+  { id: "Mercedes", image: `${CDN}/2025/07/mercedes-1.png` },
+  { id: "Land Rover", image: `${CDN}/2025/05/range-rover.svg` },
+  { id: "Audi", image: `${CDN}/2025/07/audi-1.png` },
+  { id: "BMW", image: `${CDN}/2025/07/bmw-1.png` },
+  { id: "Cadillac", image: `${CDN}/2025/07/Mcu96Jz47.png` },
+  { id: "Chevrolet", image: `${CDN}/2025/05/chevrolet-1.svg` },
+  { id: "Nissan", image: `${CDN}/2025/07/nissan-1.png` },
+  { id: "GMC", image: `${CDN}/2025/03/44hLtSMJuT.png` },
+  { id: "Mini", image: `${CDN}/2025/05/1000215855.png` },
+  { id: "Fiat", image: `${CDN}/2025/07/3tf1g9Pzjs.png` },
+  { id: "Jetour", image: `${CDN}/2025/03/uJjLh6LZkw.png` },
+  { id: "Ram", image: `${CDN}/2025/11/Ram-Logo-1993-removebg-preview-1.png` },
+  { id: "Infiniti", image: `${CDN}/2025/11/png-transparent-infiniti-car-nissan-symbol-brand-fiat-angle-emblem-trademark-removebg-preview.png` },
+  { id: "Volkswagen", image: `${CDN}/2025/11/images__7_-removebg-preview.png` },
+  { id: "Maserati", image: "" },
 ] as const;

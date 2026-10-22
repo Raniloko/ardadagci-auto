@@ -1,9 +1,11 @@
 import { MessageCircle, Phone } from "lucide-react";
-import { whatsappUrl } from "@/lib/site-data";
+import { useLanguage } from "@/lib/language";
+import { PHONE_NUMBER, whatsappUrl } from "@/lib/site-data";
 
 export function FloatingContact() {
-  return <div className="floating-contact" aria-label="Direktkontakt">
-    <a href={whatsappUrl()} target="_blank" rel="noreferrer" aria-label="WhatsApp öffnen" className="floating-whatsapp"><MessageCircle /></a>
-    <a href="tel:+971589278720" aria-label="Jetzt anrufen" className="floating-call"><Phone /></a>
+  const { t } = useLanguage();
+  return <div className="floating-contact" aria-label={t("Direktkontakt", "Direct contact")}>
+    <a href={`tel:${PHONE_NUMBER}`} aria-label={t("Jetzt anrufen", "Call now")} className="floating-call"><Phone /></a>
+    <a href={whatsappUrl()} target="_blank" rel="noreferrer" aria-label={t("WhatsApp öffnen", "Open WhatsApp")} className="floating-whatsapp"><MessageCircle /><span>WhatsApp</span></a>
   </div>;
 }

@@ -1,5 +1,6 @@
 import fleet from "./mkr-fleet.json";
 import { brandTiles, categoryTiles, type CategoryId } from "./mkr-assets";
+import type { Photo } from "./images";
 import { customerPriceEur, feeEur } from "./pricing";
 
 export const WHATSAPP_NUMBER = "971501234567";
@@ -9,11 +10,15 @@ export const whatsappUrl = (message = "Hallo ARDADAGCI, ich möchte ein Luxusfah
 
 type FleetRecord = (typeof fleet)[number];
 
-export type Car = Omit<FleetRecord, "category" | "extraKmAed" | "source"> & {
+export type Car = Omit<FleetRecord, "category" | "extraKmAed" | "source" | "images"> & {
   category: CategoryId;
   /** Customer daily price in EUR (MKR price + ARDADAGCI markup). */
   price: number;
+  /** Original image URLs (lightbox, social previews). */
+  images: string[];
   image: string;
+  /** Gallery with resized variants for responsive loading. */
+  photos: Photo[];
   extraKmEur: number | null;
   featured: boolean;
 };
@@ -30,7 +35,9 @@ export const cars: Car[] = fleet
     ...car,
     category: car.category as CategoryId,
     price: customerPriceEur(car.baseDailyAed, car.slug),
-    image: car.images[0] ?? "",
+    images: car.images.map((photo) => photo.src),
+    image: car.images[0]?.src ?? "",
+    photos: car.images,
     extraKmEur: extraKmAed ? feeEur(extraKmAed) : null,
     featured: FEATURED.includes(car.slug),
   }))

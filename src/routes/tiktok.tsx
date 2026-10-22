@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight, Play } from "lucide-react";
 import { PageIntro } from "@/components/page-intro";
+import { CarImage } from "@/components/car-image";
 import { useLanguage } from "@/lib/language";
 import { carTitle, featuredCars } from "@/lib/site-data";
 
@@ -27,7 +28,7 @@ function Page() {
         <div className="social-grid">
           {featuredCars.slice(0, 8).map((car, i) => (
             <Link key={car.slug} to="/fleet/$slug" params={{ slug: car.slug }} className={`social-tile ${i === 0 ? "is-large" : ""}`}>
-              <img src={car.images[1] ?? car.image} alt={carTitle(car)} loading="lazy" />
+              <CarImage photo={car.photos[1] ?? car.photos[0]} sizes={i === 0 ? "(max-width: 760px) 100vw, 50vw" : "(max-width: 760px) 50vw, 25vw"} alt={carTitle(car)} />
               <span className="social-overlay"><Play /><strong>{carTitle(car)}</strong></span>
             </Link>
           ))}

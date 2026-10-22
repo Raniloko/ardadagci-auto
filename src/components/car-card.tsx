@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Fuel, Gauge, MessageCircle, Users } from "lucide-react";
 import { useLanguage } from "@/lib/language";
+import { CarImage } from "./car-image";
 import { formatEur } from "@/lib/pricing";
 import { carTitle, categoryLabel, colorLabel, whatsappUrl, type Car } from "@/lib/site-data";
 
@@ -15,7 +16,7 @@ export function CarCard({ car, eager = false }: { car: Car; eager?: boolean }) {
   return (
     <article className="car-card">
       <Link to="/fleet/$slug" params={{ slug: car.slug }} className="car-card-media" aria-label={carTitle(car)}>
-        <img src={car.image} alt={`${carTitle(car)} ${colorLabel(car.color, language)}`} loading={eager ? "eager" : "lazy"} decoding="async" />
+        <CarImage photo={car.photos[0]} sizes="(max-width: 760px) 82vw, (max-width: 1280px) 31vw, 330px" alt={`${carTitle(car)} ${colorLabel(car.color, language)}`} eager={eager} />
         <span className="car-card-badges">
           {car.deposit === "none" && <span className="chip chip-solid">{t("0 € Kaution", "No deposit")}</span>}
           <span className="chip">{categoryLabel(car.category, language)}</span>

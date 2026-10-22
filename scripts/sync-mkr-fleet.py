@@ -21,6 +21,7 @@ import json
 import os
 import re
 import sys
+import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
@@ -28,6 +29,8 @@ from bs4 import BeautifulSoup
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITEMAP = "https://mkrentacar.com/car-sitemap.xml"
+MEDIA_API = "https://mkrentacar.com/wp-json/wp/v2/media?per_page=100&_fields=source_url,media_details&page="
+RESPONSIVE_SIZES = ("medium", "medium_large", "large")
 UA = {"User-Agent": "Mozilla/5.0 (ARDADAGCI fleet sync)"}
 
 CATEGORY_MAP = {"luxury": "Luxury", "sport": "Sports", "suv": "SUV", "exotic": "Exotic", "convertible": "Convertible", "economy": "Economy"}
@@ -128,6 +131,34 @@ def parse(url, body):
     return {"url": url, "name": clean(title.get_text()), "price": price, "specs": specs, "images": images, "blocks": blocks, "faqs": faqs}
 
 
+def media_sizes():
+    """Map every MKR upload URL to its full width and resized WordPress variants (e.g. "768x520")."""
+    sizes, page = {}, 1
+    while True:
+        try:
+            with urllib.request.urlopen(urllib.request.Request(MEDIA_API + str(page), headers=UA), timeout=60) as res:
+                items = json.load(res)
+        except urllib.error.HTTPError:
+            break
+        if not items:
+            break
+        for item in items:
+            src, details = item["source_url"], item.get("media_details") or {}
+            base, _, ext = src.rpartition(".")
+            variants = []
+            for key in RESPONSIVE_SIZES:
+                match = re.fullmatch(re.escape(base) + r"-(\d+x\d+)\." + re.escape(ext), ((details.get("sizes") or {}).get(key) or {}).get("source_url", ""))
+                if match:
+                    variants.append(match.group(1))
+            sizes[src] = {"w": details.get("width"), "v": variants}
+        page += 1
+    return sizes
+
+
+def responsive(images, sizes):
+    return [{"src": src, "w": (sizes.get(src) or {}).get("w"), "v": (sizes.get(src) or {}).get("v", [])} for src in images]
+
+
 def slugify(text):
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
 
@@ -143,6 +174,7 @@ def main():
     with ThreadPoolExecutor(6) as pool:
         bodies = list(pool.map(lambda u: fetch(u, args.cache), urls))
     parsed = [p for p in (parse(u, b) for u, b in zip(urls, bodies)) if p]
+    sizes = media_sizes()
 
     by_name = {}
     for p in parsed:
@@ -178,7 +210,7 @@ def main():
             "deposit": "none" if "no deposit" in (s.get("Deposit") or "").lower() else value(s.get("Deposit")),
             "mileageLimitKm": int(re.sub(r"\D", "", s["Mileage Limit"])) if re.search(r"\d", s.get("Mileage Limit") or "") else None,
             "extraKmAed": int(re.sub(r"\D", "", s["Extra Mileage"])) if re.search(r"\d", s.get("Extra Mileage") or "") else None,
-            "images": p["images"], "source": p["url"],
+            "images": responsive(p["images"], sizes), "source": p["url"],
         })
         descriptions[slug] = {"blocks": source["blocks"], "faqs": source["faqs"] or p["faqs"]}
 

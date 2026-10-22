@@ -1,2 +1,47 @@
-import { createFileRoute, Link } from "@tanstack/react-router";import { ArrowUpRight, Mail, MapPin, MessageCircle } from "lucide-react";import { PageIntro } from "@/components/page-intro";import { Button } from "@/components/ui/button";import { whatsappUrl } from "@/lib/site-data";
-export const Route=createFileRoute("/contact")({head:()=>({meta:[{title:"Contact — ARDADAGCI Dubai"},{name:"description",content:"Contact ARDADAGCI for luxury car rental, delivery, and concierge support in Dubai."},{property:"og:title",content:"Contact ARDADAGCI Dubai"},{property:"og:description",content:"Speak directly with our Dubai rental concierge."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:Page});function Page(){return <><PageIntro eyebrow="Direct contact" title="Let’s talk cars." copy="Fast answers, personal recommendations, and no call centre. Reach us through the channel that suits you."/><section className="site-shell pb-24"><div className="grid gap-px bg-border lg:grid-cols-3"><Contact icon={MessageCircle} title="WhatsApp" text="Fastest response, 24 hours" href={whatsappUrl()}/><Contact icon={Mail} title="Email" text="hello@ardadagci.com" href="mailto:hello@ardadagci.com"/><Contact icon={MapPin} title="Dubai" text="Delivery across the emirate"/></div><div className="mt-16 bg-ink p-8 text-ink-foreground sm:p-14"><p className="eyebrow text-foreground">Not sure what to choose?</p><div className="mt-5 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end"><h2 className="max-w-3xl font-display text-4xl sm:text-6xl">Tell us the occasion.<br/>We’ll find the car.</h2><Button asChild variant="default" size="xl"><Link to="/booking" search={{ car: "" }}>Start a request <ArrowUpRight/></Link></Button></div></div><p className="mt-6 text-xs text-muted-foreground">Contact details shown are sample details until confirmed by ARDADAGCI.</p></section></>};function Contact({icon:Icon,title,text,href}:{icon:typeof Mail;title:string;text:string;href?:string}){const body=<><Icon className="size-6 text-muted-foreground"/><h2 className="mt-12 font-display text-3xl">{title}</h2><p className="mt-2 text-sm text-muted-foreground">{text}</p>{href&&<ArrowUpRight className="absolute right-7 top-7 size-4"/>}</>;return href?<a href={href} target={href.startsWith("http")?"_blank":undefined} rel="noreferrer" className="relative bg-background p-7 transition-colors hover:bg-soft">{body}</a>:<div className="relative bg-background p-7">{body}</div>}
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { PageIntro } from "@/components/page-intro";
+import { useLanguage } from "@/lib/language";
+import { EMAIL, PHONE_NUMBER, whatsappUrl } from "@/lib/site-data";
+
+export const Route = createFileRoute("/contact")({
+  head: () => ({
+    meta: [
+      { title: "Kontakt — ARDADAGCI Dubai" },
+      { name: "description", content: "Kontaktieren Sie ARDADAGCI für Luxus-Autovermietung, Lieferung und Concierge-Service in Dubai." },
+      { property: "og:title", content: "Kontakt — ARDADAGCI Dubai" },
+      { property: "og:description", content: "Sprechen Sie direkt mit unserem Team in Dubai." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Page,
+});
+
+function Page() {
+  const { t } = useLanguage();
+  const channels = [
+    { icon: MessageCircle, title: "WhatsApp", text: t("Schnellste Antwort, 24 Stunden", "Fastest response, 24 hours"), href: whatsappUrl() },
+    { icon: Phone, title: t("Telefon", "Phone"), text: PHONE_NUMBER, href: `tel:${PHONE_NUMBER}` },
+    { icon: Mail, title: "E-Mail", text: EMAIL, href: `mailto:${EMAIL}` },
+    { icon: MapPin, title: "Dubai", text: t("Lieferung in alle Emirate", "Delivery across the UAE") },
+  ];
+  return (
+    <>
+      <PageIntro eyebrow={t("Direkter Kontakt", "Direct contact")} title={t("Lassen Sie uns über Autos sprechen.", "Let's talk cars.")} copy={t("Schnelle Antworten, persönliche Empfehlungen und kein Callcenter. Erreichen Sie uns über den Kanal, der zu Ihnen passt.", "Fast answers, personal recommendations and no call centre. Reach us through the channel that suits you.")} />
+      <section className="site-shell section">
+        <div className="contact-grid">
+          {channels.map((c) => {
+            const body = <><c.icon /><h2>{c.title}</h2><p>{c.text}</p>{c.href && <ArrowUpRight className="contact-arrow" />}</>;
+            return c.href ? <a key={c.title} href={c.href} target={c.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="contact-card">{body}</a> : <div key={c.title} className="contact-card">{body}</div>;
+          })}
+        </div>
+        <div className="cta-panel is-plain">
+          <p className="eyebrow">{t("Unsicher, welches Auto?", "Not sure what to choose?")}</p>
+          <h2>{t("Nennen Sie uns den Anlass. Wir finden das Auto.", "Tell us the occasion. We'll find the car.")}</h2>
+          <div className="cta-actions"><Link to="/booking" search={{ car: "" }} className="btn btn-light">{t("Anfrage starten", "Start a request")}<ArrowUpRight /></Link></div>
+        </div>
+      </section>
+    </>
+  );
+}

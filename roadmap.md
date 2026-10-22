@@ -8,3 +8,7 @@
 - [x] Dark vehicle detail and bilingual booking experience
 - [x] Prefilled WhatsApp booking links and floating contact actions
 - [x] Responsive preview validation
+- [x] Full MKR (Masterkey Rent A Car) fleet import: 175 vehicles, galleries, specs, descriptions and FAQs (`scripts/sync-mkr-fleet.py`)
+- [x] Commission pricing: MKR price + ARDADAGCI markup, shown in EUR (`src/lib/pricing.ts`)
+- [x] Complete UI redesign: cinematic hero, brand/category discovery, category rails, filters with URL state, detail gallery, booking estimate
+- [ ] Confirm real WhatsApp number, e-mail and social links in `src/lib/site-data.ts`

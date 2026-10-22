@@ -1,12 +1,105 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
-import { Check, MessageCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Check, MessageCircle, ShieldCheck, Truck, Clock } from "lucide-react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useLanguage } from "@/lib/language";
-import { cars, whatsappUrl } from "@/lib/site-data";
-export const Route=createFileRoute("/booking")({validateSearch:(s:Record<string,unknown>)=>({car:typeof s["car"]==="string"?s["car"]:""}),head:()=>({meta:[{title:"Luxury Car Booking Dubai — ARDADAGCI"},{name:"description",content:"Fragen Sie die Verfügbarkeit Ihres Wunschfahrzeugs in Dubai an und senden Sie Ihre Reservierung per WhatsApp."},{property:"og:title",content:"Luxury Car Booking Dubai — ARDADAGCI"},{property:"og:description",content:"Fahrzeug, Zeitraum und Lieferort wählen und direkt reservieren."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:BookingPage});
-function BookingPage(){const {language}=useLanguage();const {car}=Route.useSearch();const [done,setDone]=useState(false);const [url,setUrl]=useState(whatsappUrl());function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const d=new FormData(e.currentTarget);const selected=cars.find(c=>c.slug===d.get("car"));const msg=`${language==="de"?"Hallo":"Hello"} ARDADAGCI, ${language==="de"?"ich möchte eine Reservierung anfragen":"I would like to request a booking"}.\n\n${language==="de"?"Fahrzeug":"Car"}: ${selected?`${selected.brand} ${selected.name}`:language==="de"?"Bitte empfehlen":"Please recommend"}\n${language==="de"?"Zeitraum":"Dates"}: ${d.get("start")} - ${d.get("end")}\n${language==="de"?"Name":"Name"}: ${d.get("name")}\n${language==="de"?"Telefon":"Phone"}: ${d.get("phone")}\n${language==="de"?"Lieferort":"Delivery"}: ${d.get("location")}\n${language==="de"?"Nachricht":"Notes"}: ${d.get("notes")||"-"}`;setUrl(whatsappUrl(msg));setDone(true)}return <section className="site-shell booking-page"><div className="booking-copy"><p>{language==="de"?"Verfügbarkeit anfragen":"Check availability"}</p><h1>{language==="de"?"Reservieren Sie Ihr Traumauto":"Reserve your dream car"}</h1><p>{language==="de"?"Senden Sie uns Ihre Reisedaten. Unser Team bestätigt Fahrzeug, Preis und Lieferung persönlich über WhatsApp.":"Send us your travel details. Our team will confirm the car, price and delivery personally via WhatsApp."}</p><div className="booking-points"><span><Check/>{language==="de"?"0 € Kaution":"No deposit"}</span><span><Check/>{language==="de"?"Lieferung in Dubai":"Dubai delivery"}</span><span><Check/>{language==="de"?"Persönlicher 24/7 Service":"Personal 24/7 service"}</span></div></div><form onSubmit={submit} className="booking-form"><div className="form-grid"><Field label={language==="de"?"Name":"Name"}><Input aria-label="Name" name="name" required placeholder={language==="de"?"Vollständiger Name":"Full name"}/></Field><Field label="WhatsApp"><Input aria-label="WhatsApp" name="phone" required type="tel" placeholder="+971"/></Field><Field label={language==="de"?"Fahrzeug":"Car"} wide><select aria-label={language==="de"?"Fahrzeug":"Car"} name="car" defaultValue={car} className="form-control"><option value="">{language==="de"?"Bitte empfehlen":"Please recommend"}</option>{cars.map(c=><option value={c.slug} key={c.slug}>{c.brand} {c.name} — AED {c.price.toLocaleString("en-US")}/{language==="de"?"Tag":"day"}</option>)}</select></Field><Field label={language==="de"?"Von":"From"}><Input aria-label={language==="de"?"Startdatum":"Start date"} name="start" required type="date"/></Field><Field label={language==="de"?"Bis":"To"}><Input aria-label={language==="de"?"Enddatum":"End date"} name="end" required type="date"/></Field><Field label={language==="de"?"Lieferort":"Delivery location"} wide><Input aria-label={language==="de"?"Lieferort":"Delivery location"} name="location" required placeholder={language==="de"?"Hotel, Residenz oder Flughafen":"Hotel, residence or airport"}/></Field><Field label={language==="de"?"Nachricht":"Message"} wide><Textarea aria-label={language==="de"?"Nachricht":"Message"} name="notes" rows={4}/></Field></div>{done?<div className="booking-ready"><p><Check/>{language==="de"?"Ihre Anfrage ist bereit.":"Your request is ready."}</p><Button asChild size="xl"><a href={url} target="_blank" rel="noreferrer"><MessageCircle/>{language==="de"?"Über WhatsApp senden":"Send via WhatsApp"}</a></Button></div>:<Button size="xl" type="submit" className="w-full">{language==="de"?"WhatsApp Reservierung vorbereiten":"Prepare WhatsApp booking"}</Button>}</form></section>}
-function Field({label,wide=false,children}:{label:string;wide?:boolean;children:React.ReactNode}){return <div className={wide?"sm:col-span-2":""}><Label>{label}</Label>{children}</div>}
+import { formatEur } from "@/lib/pricing";
+import { brands, carTitle, cars, colorLabel, findCar, whatsappUrl } from "@/lib/site-data";
+
+export const Route = createFileRoute("/booking")({
+  validateSearch: (s: Record<string, unknown>) => ({ car: typeof s["car"] === "string" ? s["car"] : "" }),
+  head: () => ({
+    meta: [
+      { title: "Reservierung — Luxusauto mieten in Dubai | ARDADAGCI" },
+      { name: "description", content: "Fragen Sie die Verfügbarkeit Ihres Wunschfahrzeugs in Dubai an und senden Sie Ihre Reservierung per WhatsApp." },
+      { property: "og:title", content: "Reservierung — ARDADAGCI Dubai" },
+      { property: "og:description", content: "Fahrzeug, Zeitraum und Lieferort wählen und direkt reservieren." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: BookingPage,
+});
+
+const DAY = 86_400_000;
+
+function BookingPage() {
+  const { language, t } = useLanguage();
+  const search = Route.useSearch();
+  const [slug, setSlug] = useState(search.car);
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [url, setUrl] = useState<string | null>(null);
+  const car = findCar(slug);
+  const days = start && end ? Math.max(1, Math.round((Date.parse(end) - Date.parse(start)) / DAY)) : 0;
+  const today = new Date().toISOString().slice(0, 10);
+  const grouped = useMemo(() => brands.map((b) => ({ brand: b.id, cars: cars.filter((c) => c.brand === b.id) })), []);
+
+  function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const d = new FormData(e.currentTarget);
+    const lines = [
+      t("Hallo ARDADAGCI, ich möchte eine Reservierung anfragen.", "Hello ARDADAGCI, I would like to request a booking."),
+      "",
+      `${t("Fahrzeug", "Car")}: ${car ? `${carTitle(car)} (${colorLabel(car.color, language)}) – ${formatEur(car.price, language)}/${t("Tag", "day")}` : t("Bitte empfehlen", "Please recommend")}`,
+      `${t("Zeitraum", "Dates")}: ${start} – ${end}${days ? ` (${days} ${t(days === 1 ? "Tag" : "Tage", days === 1 ? "day" : "days")})` : ""}`,
+      ...(car && days ? [`${t("Geschätzt", "Estimate")}: ${formatEur(car.price * days, language)}`] : []),
+      `${t("Lieferort", "Delivery")}: ${d.get("location")}`,
+      `Name: ${d.get("name")}`,
+      `${t("Telefon", "Phone")}: ${d.get("phone")}`,
+      `${t("Nachricht", "Notes")}: ${d.get("notes") || "-"}`,
+    ];
+    const link = whatsappUrl(lines.join("\n"));
+    setUrl(link);
+    window.open(link, "_blank", "noopener");
+  }
+
+  return (
+    <section className="site-shell booking-page">
+      <div className="booking-copy">
+        <p className="eyebrow">{t("Verfügbarkeit anfragen", "Check availability")}</p>
+        <h1>{t("Reservieren Sie Ihr Traumauto", "Reserve your dream car")}</h1>
+        <p className="section-copy">{t("Senden Sie uns Ihre Reisedaten. Wir bestätigen Fahrzeug, Preis und Lieferung persönlich über WhatsApp – meist innerhalb weniger Minuten.", "Send us your travel details. We confirm car, price and delivery personally via WhatsApp – usually within minutes.")}</p>
+        <ul className="booking-points">
+          <li><ShieldCheck />{t("0 € Kaution", "No deposit")}</li>
+          <li><Truck />{t("Lieferung zu Hotel, Residenz oder Flughafen", "Delivery to hotel, residence or airport")}</li>
+          <li><Clock />{t("Persönlicher 24/7 Service", "Personal 24/7 service")}</li>
+        </ul>
+        {car && (
+          <Link to="/fleet/$slug" params={{ slug: car.slug }} className="booking-car">
+            <img src={car.image} alt={carTitle(car)} />
+            <div><small>{car.brand}</small><strong>{car.name}</strong><span>{formatEur(car.price, language)} / {t("Tag", "day")}</span></div>
+          </Link>
+        )}
+      </div>
+      <form onSubmit={submit} className="booking-form">
+        <div className="form-grid">
+          <Field label={t("Fahrzeug", "Car")} wide>
+            <select name="car" value={slug} onChange={(e) => setSlug(e.target.value)} className="form-control">
+              <option value="">{t("Bitte empfehlen", "Please recommend")}</option>
+              {grouped.map((g) => <optgroup key={g.brand} label={g.brand}>{g.cars.map((c) => <option key={c.slug} value={c.slug}>{c.name}{c.color ? ` – ${colorLabel(c.color, language)}` : ""} · {formatEur(c.price, language)}/{t("Tag", "day")}</option>)}</optgroup>)}
+            </select>
+          </Field>
+          <Field label={t("Von", "From")}><input className="form-control" name="start" required type="date" min={today} value={start} onChange={(e) => setStart(e.target.value)} /></Field>
+          <Field label={t("Bis", "To")}><input className="form-control" name="end" required type="date" min={start || today} value={end} onChange={(e) => setEnd(e.target.value)} /></Field>
+          <Field label={t("Lieferort", "Delivery location")} wide><input className="form-control" name="location" required placeholder={t("Hotel, Residenz oder Flughafen", "Hotel, residence or airport")} /></Field>
+          <Field label="Name"><input className="form-control" name="name" required autoComplete="name" placeholder={t("Vollständiger Name", "Full name")} /></Field>
+          <Field label="WhatsApp"><input className="form-control" name="phone" required type="tel" autoComplete="tel" placeholder="+49 …" /></Field>
+          <Field label={t("Nachricht", "Message")} wide><textarea className="form-control" name="notes" rows={4} placeholder={t("Anlass, Wünsche, Kindersitz …", "Occasion, wishes, child seat …")} /></Field>
+        </div>
+        {car && days > 0 && (
+          <div className="estimate">
+            <span>{days} × {formatEur(car.price, language)}</span>
+            <strong>{formatEur(car.price * days, language)}</strong>
+            <small>{t("Geschätzter Mietpreis – Wochen- und Monatsrabatte auf Anfrage", "Estimated rental – weekly and monthly discounts on request")}</small>
+          </div>
+        )}
+        <button type="submit" className="btn btn-whatsapp btn-lg w-full"><MessageCircle />{t("Anfrage per WhatsApp senden", "Send request via WhatsApp")}</button>
+        {url && <p className="booking-ready"><Check />{t("Ihre Anfrage wurde in WhatsApp geöffnet.", "Your request was opened in WhatsApp.")} <a href={url} target="_blank" rel="noreferrer">{t("Erneut öffnen", "Open again")}</a></p>}
+      </form>
+    </section>
+  );
+}
+
+function Field({ label, wide = false, children }: { label: string; wide?: boolean; children: ReactNode }) {
+  return <label className={`field ${wide ? "wide" : ""}`}><span>{label}</span>{children}</label>;
+}

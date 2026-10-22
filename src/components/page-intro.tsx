@@ -1,1 +1,3 @@
-export function PageIntro({eyebrow,title,copy}:{eyebrow:string;title:string;copy:string}){return <section className="site-shell page-intro"><p>{eyebrow}</p><h1>{title}</h1><span>{copy}</span></section>}
+export function PageIntro({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
+  return <section className="site-shell page-intro"><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><span>{copy}</span></section>;
+}

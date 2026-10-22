@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, MessageCircle, ShieldCheck, Truck, Clock } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { CarImage } from "@/components/car-image";
 import { useLanguage } from "@/lib/language";
 import { formatEur } from "@/lib/pricing";
 import { brands, carTitle, cars, colorLabel, findCar, whatsappUrl } from "@/lib/site-data";
@@ -66,7 +67,7 @@ function BookingPage() {
         </ul>
         {car && (
           <Link to="/fleet/$slug" params={{ slug: car.slug }} className="booking-car">
-            <img src={car.image} alt={carTitle(car)} />
+            <CarImage photo={car.photos[0]} sizes="140px" alt={carTitle(car)} eager />
             <div><small>{car.brand}</small><strong>{car.name}</strong><span>{formatEur(car.price, language)} / {t("Tag", "day")}</span></div>
           </Link>
         )}

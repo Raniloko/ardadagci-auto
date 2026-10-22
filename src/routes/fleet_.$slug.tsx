@@ -3,6 +3,7 @@ import { BadgeCheck, CalendarCheck, Car as CarIcon, ChevronLeft, ChevronRight, C
 import { useEffect, useState } from "react";
 import { bookingMessage, CarCard } from "@/components/car-card";
 import { Rail } from "@/components/car-rail";
+import { CarImage } from "@/components/car-image";
 import { FaqList } from "@/components/faq-list";
 import { getCarContent, renderPrices } from "@/lib/car-content";
 import { useLanguage } from "@/lib/language";
@@ -177,7 +178,7 @@ function Gallery({ car }: { car: Car }) {
   return (
     <div className="gallery">
       <div className="gallery-main">
-        <img src={car.images[index]} alt={alt} />
+        <CarImage key={index} photo={car.photos[index]} sizes="(max-width: 1100px) 100vw, 60vw" alt={alt} eager={index === 0} />
         {count > 1 && <>
           <button type="button" className="gallery-nav prev" onClick={() => go(-1)} aria-label={t("Vorheriges Bild", "Previous image")}><ChevronLeft /></button>
           <button type="button" className="gallery-nav next" onClick={() => go(1)} aria-label={t("Nächstes Bild", "Next image")}><ChevronRight /></button>
@@ -185,7 +186,7 @@ function Gallery({ car }: { car: Car }) {
         <button type="button" className="gallery-zoom" onClick={() => setZoom(true)} aria-label={t("Vollbild", "Full screen")}><Expand /></button>
         <span className="gallery-count">{index + 1} / {count}</span>
       </div>
-      {count > 1 && <div className="gallery-thumbs">{car.images.map((src, i) => <button key={src} type="button" className={i === index ? "active" : ""} onClick={() => setIndex(i)} aria-label={`${t("Bild", "Image")} ${i + 1}`}><img src={src} alt="" loading="lazy" /></button>)}</div>}
+      {count > 1 && <div className="gallery-thumbs">{car.images.map((src, i) => <button key={src} type="button" className={i === index ? "active" : ""} onClick={() => setIndex(i)} aria-label={`${t("Bild", "Image")} ${i + 1}`}><CarImage photo={car.photos[i]} sizes="112px" alt="" /></button>)}</div>}
       {zoom && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label={carTitle(car)} onClick={() => setZoom(false)}>
           <img src={car.images[index]} alt={alt} onClick={(e) => e.stopPropagation()} />

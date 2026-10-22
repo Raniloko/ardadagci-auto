@@ -29,7 +29,7 @@ export function SiteHeader() {
     <header className={`site-header ${overlay ? "is-overlay" : ""}`}>
       <div className="header-inner">
         <Link to="/" className="brand-mark" aria-label={t("ARDADAGCI Startseite", "ARDADAGCI home")}>
-          <img src="/ardadagci-logo.png" alt="" width={44} height={44} />
+          <img src="/ardadagci-mark.png" alt="" width={260} height={192} />
           <span><strong>ARDADAGCI</strong><small>Dubai Car Rental</small></span>
         </Link>
         <nav className="desktop-nav" aria-label={t("Hauptnavigation", "Main navigation")}>

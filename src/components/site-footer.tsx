@@ -9,7 +9,7 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="site-shell footer-top">
         <div className="footer-brand">
-          <Link to="/" className="brand-mark"><img src="/ardadagci-logo.png" alt="" width={44} height={44} /><span><strong>ARDADAGCI</strong><small>Dubai Car Rental</small></span></Link>
+          <Link to="/" className="brand-mark"><img src="/ardadagci-mark.png" alt="" width={260} height={192} /><span><strong>ARDADAGCI</strong><small>Dubai Car Rental</small></span></Link>
           <p>{t("Luxus- und Sportwagen in Dubai – ohne Kaution, mit Lieferung und persönlichem Service auf Deutsch.", "Luxury and sports cars in Dubai – no deposit, delivered, with personal service.")}</p>
           <div className="footer-social">
             <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok"><Music2 /></a>

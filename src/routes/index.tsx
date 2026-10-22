@@ -2,11 +2,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, BadgeCheck, Car as CarIcon, Clock, CreditCard, MapPin, MessageCircle, Search, ShieldCheck, Sparkles, Star, Tag, Truck } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { CarCard } from "@/components/car-card";
+import { CarImage } from "@/components/car-image";
 import { Rail } from "@/components/car-rail";
 import { BrandRail, CategoryTiles } from "@/components/discovery-filters";
 import { FaqList } from "@/components/faq-list";
 import { SectionHeading } from "@/components/section-heading";
 import { useLanguage } from "@/lib/language";
+import { photoSrc } from "@/lib/images";
 import { mkrHero } from "@/lib/mkr-assets";
 import { formatEur } from "@/lib/pricing";
 import { brandStories, documents, faqGroups, features, locations, steps } from "@/lib/site-content";
@@ -82,7 +84,7 @@ function HomePage() {
             const car = cars.find((c) => c.brand === story.brand);
             return (
               <article key={story.brand} className={`story ${i % 2 ? "is-reversed" : ""}`}>
-                {car && <Link to="/fleet" search={{ brand: story.brand }} className="story-media"><img src={car.image} alt={carTitle(car)} loading="lazy" /></Link>}
+                {car && <Link to="/fleet" search={{ brand: story.brand }} className="story-media"><CarImage photo={car.photos[0]} sizes="(max-width: 1100px) 100vw, 55vw" alt={carTitle(car)} /></Link>}
                 <div className="story-copy">
                   <p className="eyebrow">{cars.filter((c) => c.brand === story.brand).length} {t("Fahrzeuge", "cars")}</p>
                   <h3>{story.title[language]}</h3>
@@ -167,7 +169,7 @@ function HomePage() {
       </section>
 
       <section className="site-shell section">
-        <div className="cta-panel" style={{ backgroundImage: `linear-gradient(90deg, rgb(0 0 0 / .92) 30%, rgb(0 0 0 / .35)), url(${featuredCars[0]?.images[1] ?? mkrHero})` }}>
+        <div className="cta-panel" style={{ backgroundImage: `linear-gradient(90deg, rgb(0 0 0 / .92) 30%, rgb(0 0 0 / .35)), url(${featuredCars[0]?.photos[1] ? photoSrc(featuredCars[0].photos[1]) : mkrHero.src})` }}>
           <p className="eyebrow">{t("Persönlicher Service", "Personal service")}</p>
           <h2>{t("Ihr Traumauto. In Dubai. Heute noch.", "Your dream car. In Dubai. Today.")}</h2>
           <p>{t("Schreiben Sie uns Ihr Wunschfahrzeug und Ihre Reisedaten – wir bestätigen Verfügbarkeit und Preis innerhalb weniger Minuten.", "Send us your dream car and travel dates – we confirm availability and price within minutes.")}</p>
@@ -193,7 +195,7 @@ function Hero() {
   }
   return (
     <section className="hero">
-      <img className="hero-image" src={mkrHero} alt="" fetchPriority="high" />
+      <img className="hero-image" src={mkrHero.src} srcSet={`${mkrHero.small} 960w, ${mkrHero.src} 1920w`} sizes="100vw" width={1920} height={1088} alt="" fetchPriority="high" decoding="async" />
       <div className="hero-scrim" />
       <div className="site-shell hero-inner">
         <p className="eyebrow hero-eyebrow">{t("Luxus-Autovermietung in Dubai", "Luxury car rental in Dubai")}</p>

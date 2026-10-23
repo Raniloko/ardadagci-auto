@@ -1,18 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useLanguage } from "@/lib/language";
-import { formatEur } from "@/lib/pricing";
-import { useSite } from "@/lib/use-site";
+import { useMoney, useSite } from "@/lib/use-site";
 
 export function CategoryTiles() {
   const { language, t } = useLanguage();
   const { categories } = useSite().fleet;
+  const money = useMoney();
   return (
     <div className="category-grid">
       {categories.map((c) => (
         <Link key={c.id} to="/fleet" search={{ category: c.id }} className="category-tile">
           <img src={c.image} alt="" loading="lazy" />
-          <span className="category-tile-text"><strong>{c[language]}</strong><small>{c.count} {t("Fahrzeuge", "cars")} · {t("ab", "from")} {formatEur(c.fromPrice, language)}</small></span>
+          <span className="category-tile-text"><strong>{c[language]}</strong><small>{c.count} {t("Fahrzeuge", "cars")} · {t("ab", "from")} {money(c.fromPrice)}</small></span>
         </Link>
       ))}
     </div>

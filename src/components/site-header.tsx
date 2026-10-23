@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, Phone, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CurrencyToggle } from "@/components/currency-toggle";
 import { useLanguage } from "@/lib/language";
 import { useSite } from "@/lib/use-site";
 
@@ -40,6 +41,7 @@ export function SiteHeader() {
           <div className="language-toggle" role="group" aria-label={t("Sprache wählen", "Choose language")}>
             {(["de", "en"] as const).map((code) => <button key={code} type="button" aria-pressed={language === code} className={language === code ? "active" : ""} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>)}
           </div>
+          <CurrencyToggle className="header-currency" />
           <a className="header-phone" href={`tel:${contact.phoneNumber}`} aria-label={t("Anrufen", "Call us")}><Phone /></a>
           <Link to="/booking" search={{ car: "" }} className="btn btn-light header-cta">{t("Jetzt buchen", "Book now")}</Link>
           <button type="button" className="menu-trigger" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={open ? t("Menü schließen", "Close menu") : t("Menü öffnen", "Open menu")}>{open ? <X /> : <Menu />}</button>
@@ -49,6 +51,7 @@ export function SiteHeader() {
         <nav className="mobile-nav" aria-label={t("Mobile Navigation", "Mobile navigation")}>
           <Link to="/">{t("Start", "Home")}</Link>
           {links.map(([de, en, to]) => <Link key={to} to={to}>{t(de, en)}</Link>)}
+          <div className="mobile-nav-pref"><span>{t("Preise anzeigen in", "Show prices in")}</span><CurrencyToggle /></div>
           <Link to="/booking" search={{ car: "" }} className="btn btn-light">{t("Jetzt buchen", "Book now")}</Link>
         </nav>
       )}

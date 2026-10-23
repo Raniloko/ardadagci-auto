@@ -3,10 +3,10 @@ import { Check, MessageCircle, ShieldCheck, Truck, Clock } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { CarImage } from "@/components/car-image";
 import { useLanguage } from "@/lib/language";
-import { formatEur } from "@/lib/pricing";
+import { formatMoney } from "@/lib/pricing";
 import { saveBookingRequest } from "@/lib/bookings";
 import { carTitle, colorLabel } from "@/lib/site-data";
-import { useSite } from "@/lib/use-site";
+import { useMoney, useSite } from "@/lib/use-site";
 
 export const Route = createFileRoute("/booking")({
   validateSearch: (s: Record<string, unknown>) => ({ car: typeof s["car"] === "string" ? s["car"] : "" }),
@@ -29,6 +29,9 @@ function BookingPage() {
   const { language, t } = useLanguage();
   const search = Route.useSearch();
   const { fleet: { brands, cars, findCar }, contact } = useSite();
+  const money = useMoney();
+  // WhatsApp messages always state the binding AED price.
+  const aed = (value: number) => formatMoney(value, "AED", language);
   const [slug, setSlug] = useState(search.car);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
@@ -44,9 +47,9 @@ function BookingPage() {
     const lines = [
       t("Hallo ARDADAGCI, ich möchte eine Reservierung anfragen.", "Hello ARDADAGCI, I would like to request a booking."),
       "",
-      `${t("Fahrzeug", "Car")}: ${car ? `${carTitle(car)} (${colorLabel(car.color, language)}) – ${formatEur(car.price, language)}/${t("Tag", "day")}` : t("Bitte empfehlen", "Please recommend")}`,
+      `${t("Fahrzeug", "Car")}: ${car ? `${carTitle(car)} (${colorLabel(car.color, language)}) – ${aed(car.price)}/${t("Tag", "day")}` : t("Bitte empfehlen", "Please recommend")}`,
       `${t("Zeitraum", "Dates")}: ${start} – ${end}${days ? ` (${days} ${t(days === 1 ? "Tag" : "Tage", days === 1 ? "day" : "days")})` : ""}`,
-      ...(car && days ? [`${t("Geschätzt", "Estimate")}: ${formatEur(car.price * days, language)}`] : []),
+      ...(car && days ? [`${t("Geschätzt", "Estimate")}: ${aed(car.price * days)}`] : []),
       `${t("Lieferort", "Delivery")}: ${d.get("location")}`,
       `Name: ${d.get("name")}`,
       `${t("Telefon", "Phone")}: ${d.get("phone")}`,
@@ -66,8 +69,8 @@ function BookingPage() {
         customer_phone: String(d.get("phone") ?? ""),
         location: String(d.get("location") ?? ""),
         notes: String(d.get("notes") ?? ""),
-        price_per_day_eur: car?.price ?? null,
-        total_eur: car && days ? car.price * days : null,
+        price_per_day_aed: car?.price ?? null,
+        total_aed: car && days ? car.price * days : null,
         language,
       });
     }
@@ -80,14 +83,14 @@ function BookingPage() {
         <h1>{t("Reservieren Sie Ihr Traumauto", "Reserve your dream car")}</h1>
         <p className="section-copy">{t("Senden Sie uns Ihre Reisedaten. Wir bestätigen Fahrzeug, Preis und Lieferung persönlich über WhatsApp – meist innerhalb weniger Minuten.", "Send us your travel details. We confirm car, price and delivery personally via WhatsApp – usually within minutes.")}</p>
         <ul className="booking-points">
-          <li><ShieldCheck />{t("0 € Kaution", "No deposit")}</li>
+          <li><ShieldCheck />{t("Keine Kaution", "No deposit")}</li>
           <li><Truck />{t("Lieferung zu Hotel, Residenz oder Flughafen", "Delivery to hotel, residence or airport")}</li>
           <li><Clock />{t("Persönlicher 24/7 Service", "Personal 24/7 service")}</li>
         </ul>
         {car && (
           <Link to="/fleet/$slug" params={{ slug: car.slug }} className="booking-car">
             <CarImage photo={car.photos[0]} sizes="140px" alt={carTitle(car)} eager />
-            <div><small>{car.brand}</small><strong>{car.name}</strong><span>{formatEur(car.price, language)} / {t("Tag", "day")}</span></div>
+            <div><small>{car.brand}</small><strong>{car.name}</strong><span>{money(car.price)} / {t("Tag", "day")}</span></div>
           </Link>
         )}
       </div>
@@ -97,7 +100,7 @@ function BookingPage() {
           <Field label={t("Fahrzeug", "Car")} wide>
             <select name="car" value={slug} onChange={(e) => setSlug(e.target.value)} className="form-control">
               <option value="">{t("Bitte empfehlen", "Please recommend")}</option>
-              {grouped.map((g) => <optgroup key={g.brand} label={g.brand}>{g.cars.map((c) => <option key={c.slug} value={c.slug}>{c.name}{c.color ? ` – ${colorLabel(c.color, language)}` : ""} · {formatEur(c.price, language)}/{t("Tag", "day")}</option>)}</optgroup>)}
+              {grouped.map((g) => <optgroup key={g.brand} label={g.brand}>{g.cars.map((c) => <option key={c.slug} value={c.slug}>{c.name}{c.color ? ` – ${colorLabel(c.color, language)}` : ""} · {money(c.price)}/{t("Tag", "day")}</option>)}</optgroup>)}
             </select>
           </Field>
           <Field label={t("Von", "From")}><input className="form-control" name="start" required type="date" min={today} value={start} onChange={(e) => setStart(e.target.value)} /></Field>
@@ -109,8 +112,8 @@ function BookingPage() {
         </div>
         {car && days > 0 && (
           <div className="estimate">
-            <span>{days} × {formatEur(car.price, language)}</span>
-            <strong>{formatEur(car.price * days, language)}</strong>
+            <span>{days} × {money(car.price)}</span>
+            <strong>{money(car.price * days)}</strong>
             <small>{t("Geschätzter Mietpreis – Wochen- und Monatsrabatte auf Anfrage", "Estimated rental – weekly and monthly discounts on request")}</small>
           </div>
         )}

@@ -93,6 +93,8 @@ button.adm-row:active, a.adm-row:active { background: var(--a-fill); }
 .adm-field-inline { display: flex; align-items: center; gap: 8px; }
 .adm-field-inline input { flex: 1; }
 .adm-field-inline em { color: var(--a-sub); font-style: normal; }
+.adm-tier input { flex: 0 1 64px; min-width: 0; }
+.adm-tier input:disabled { color: var(--a-sub); }
 .adm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 20px; border: 0; border-radius: 14px; background: var(--a-primary); color: var(--a-on-primary); font-size: 17px; font-weight: 600; cursor: pointer; transition: opacity .15s, transform .1s; }
 .adm-btn:active { transform: scale(.98); opacity: .85; }
 .adm-btn:disabled { opacity: .4; }

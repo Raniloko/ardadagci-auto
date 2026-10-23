@@ -4,16 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { Field, LargeTitle, SaveBar, Section, TopBar, useToast } from "@/components/admin/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { errorMessage, signOut, useAdminFleet, useAdminSettings, useSaveSettings } from "@/lib/admin-data";
-import { aedToEur, customerPriceEur, formatEur } from "@/lib/pricing";
+import { customerPriceAed, formatAed, formatMoney, type MarkupTier } from "@/lib/pricing";
 import type { SiteSettings } from "@/lib/site-config";
 import { carTitle, formatPhone } from "@/lib/site-data";
 
 export const Route = createFileRoute("/admin/einstellungen")({ component: SettingsPage });
 
-type Draft = { markup: string; rate: string; whatsapp: string; phone: string; email: string; tiktok: string };
+type Draft = { tiers: { from: string; add: string }[]; rate: string; whatsapp: string; phone: string; email: string; tiktok: string };
 
 const toDraft = (s: SiteSettings): Draft => ({
-  markup: String(s.markupPercent).replace(".", ","),
+  tiers: s.markupTiers.map((tier) => ({ from: String(tier.fromAed), add: String(tier.addAed) })),
   rate: String(s.aedPerEur).replace(".", ","),
   whatsapp: formatPhone(`+${s.whatsappNumber}`),
   phone: formatPhone(s.phoneNumber),
@@ -21,6 +21,9 @@ const toDraft = (s: SiteSettings): Draft => ({
   tiktok: s.tiktokUrl,
 });
 const num = (value: string) => Number(value.replace(",", "."));
+const digits = (value: string) => value.replace(/[^\d]/g, "");
+// Sample cars for the live price preview: entry level, mid range, supercar, top models.
+const EXAMPLES = ["2023-mini-cooper-s-cabriolet", "lamborghini-urus-s", "ferrari-sf-90", "lamborghini-revuelto", "ferrari-purosangue"];
 
 function SettingsPage() {
   const toast = useToast();
@@ -34,24 +37,28 @@ function SettingsPage() {
   useEffect(() => { supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? "")); }, []);
   if (!draft || !saved) return <><TopBar /><LargeTitle>Einstellungen</LargeTitle><p style={{ color: "var(--a-sub)" }}>Lädt …</p></>;
 
-  const set = (key: keyof Draft, value: string) => setDraft({ ...draft, [key]: value });
+  const set = (key: Exclude<keyof Draft, "tiers">, value: string) => setDraft({ ...draft, [key]: value });
+  const setTier = (index: number, key: "from" | "add", value: string) => setDraft({ ...draft, tiers: draft.tiers.map((tier, i) => (i === index ? { ...tier, [key]: digits(value) } : tier)) });
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
-  const markup = num(draft.markup);
   const rate = num(draft.rate);
-  const example = fleet.all.find((c) => c.slug === "lamborghini-urus-s") ?? fleet.all[0];
-  const pricingValid = markup >= 0 && markup <= 500 && rate >= 1 && rate <= 10;
+  const tiers: MarkupTier[] = draft.tiers.map((tier, i) => ({ fromAed: i === 0 ? 0 : Number(tier.from), addAed: Number(tier.add) }));
+  const tiersValid = draft.tiers.every((tier, i) => tier.add !== "" && (i === 0 || tier.from !== "")) && tiers.every((tier, i) => tier.addAed <= 5000 && (i === 0 || tier.fromAed > tiers[i - 1]!.fromAed));
+  const pricingValid = tiersValid && rate >= 1 && rate <= 10;
+  const pricing = { markupTiers: tiers, aedPerEur: rate };
+  const examples = EXAMPLES.map((slug) => fleet.all.find((c) => c.slug === slug)).filter((c) => c !== undefined);
 
   function submit() {
     if (!draft) return;
     const whatsapp = draft.whatsapp.replace(/\D/g, "").replace(/^00/, "");
     const phone = draft.phone.replace(/[^\d+]/g, "");
-    if (!pricingValid) return toast("Aufschlag (0–500 %) oder Wechselkurs (1–10) ungültig", true);
+    if (!tiersValid) return toast("Preisklassen prüfen: Startpreise müssen aufsteigen, Aufschlag max. 5.000 AED", true);
+    if (!(rate >= 1 && rate <= 10)) return toast("Wechselkurs ungültig (1–10 AED pro €)", true);
     if (!/^\d{6,15}$/.test(whatsapp)) return toast("WhatsApp-Nummer bitte mit Ländervorwahl, z. B. +49 172 …", true);
     if (!/^\+?\d{6,20}$/.test(phone)) return toast("Telefonnummer ungültig", true);
     if (draft.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(draft.email.trim())) return toast("E-Mail-Adresse ungültig", true);
     if (draft.tiktok && !/^https:\/\//.test(draft.tiktok.trim())) return toast("TikTok-Link muss mit https:// beginnen", true);
     save.mutate(
-      { markupPercent: markup, aedPerEur: rate, whatsappNumber: whatsapp, phoneNumber: phone, email: draft.email.trim(), tiktokUrl: draft.tiktok.trim() },
+      { markupTiers: tiers, aedPerEur: rate, whatsappNumber: whatsapp, phoneNumber: phone, email: draft.email.trim(), tiktokUrl: draft.tiktok.trim() },
       { onSuccess: () => toast("Gespeichert – auf der Website in ca. 30 Sekunden sichtbar"), onError: (error) => toast(errorMessage(error), true) },
     );
   }
@@ -69,8 +76,36 @@ function SettingsPage() {
       <TopBar />
       <LargeTitle>Einstellungen</LargeTitle>
 
-      <Section title="Preise" foot={pricingValid && example ? `Beispiel ${carTitle(example)}: MKR ${example.baseDailyAed.toLocaleString("de-DE")} AED ≈ ${formatEur(Math.round(aedToEur(example.baseDailyAed, { markupPercent: markup, aedPerEur: rate })))} → Kunde ${formatEur(customerPriceEur(example.baseDailyAed, { markupPercent: markup, aedPerEur: rate }))} pro Tag. Gilt für alle Fahrzeuge ohne festen Preis.` : "Bitte gültige Werte eingeben."}>
-        <Field label="Aufschlag auf den MKR-Preis"><span className="adm-field-inline"><input inputMode="decimal" value={draft.markup} onChange={(e) => set("markup", e.target.value.replace(/[^\d,.]/g, ""))} /><em>%</em></span></Field>
+      <Section title="Aufschlag je Preisklasse" foot="Kundenpreis = MKR-Tagespreis + Aufschlag der passenden Klasse. Gilt für alle Fahrzeuge ohne festen Preis.">
+        {draft.tiers.map((tier, i) => {
+          const next = draft.tiers[i + 1];
+          const range = next ? `${formatAed(i === 0 ? 0 : Number(tier.from))} – ${formatAed(Math.max(0, Number(next.from) - 1))}` : `ab ${formatAed(Number(tier.from))}`;
+          return (
+            <Field key={i} label={`MKR-Preis ${range}`}>
+              <span className="adm-field-inline adm-tier">
+                <em>ab</em><input inputMode="numeric" aria-label="Ab MKR-Preis" value={i === 0 ? "0" : tier.from} disabled={i === 0} onChange={(e) => setTier(i, "from", e.target.value)} />
+                <em>AED&nbsp;→&nbsp;+</em><input inputMode="numeric" aria-label="Aufschlag" value={tier.add} onChange={(e) => setTier(i, "add", e.target.value)} /><em>AED</em>
+              </span>
+            </Field>
+          );
+        })}
+      </Section>
+
+      <Section title="Vorschau" foot="So sehen Kunden die Tagespreise (Standard: AED, umschaltbar auf Euro).">
+        {pricingValid ? (
+          <dl className="adm-kv">
+            {examples.map((car) => {
+              const price = customerPriceAed(car.baseDailyAed, pricing);
+              return [
+                <dt key={`${car.slug}-t`}>{carTitle(car)}<br /><small>MKR {formatAed(car.baseDailyAed)} · +{formatAed(price - car.baseDailyAed)}</small></dt>,
+                <dd key={`${car.slug}-d`}>{formatAed(price)}<br /><small style={{ color: "var(--a-sub)", fontWeight: 400 }}>≈ {formatMoney(price, "EUR", "de", rate)}</small></dd>,
+              ];
+            })}
+          </dl>
+        ) : <p className="adm-section-foot" style={{ padding: "12px 16px" }}>Bitte gültige Werte eingeben.</p>}
+      </Section>
+
+      <Section title="Euro-Umrechnung" foot="Nur für die Euro-Anzeige auf der Website. Gebucht und abgerechnet wird in AED.">
         <Field label="Wechselkurs (AED pro 1 €)"><span className="adm-field-inline"><input inputMode="decimal" value={draft.rate} onChange={(e) => set("rate", e.target.value.replace(/[^\d,.]/g, ""))} /><em>AED</em></span></Field>
       </Section>
 

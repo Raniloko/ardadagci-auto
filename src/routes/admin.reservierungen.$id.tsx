@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Field, LargeTitle, SaveBar, Section, Segmented, TopBar, useToast } from "@/components/admin/ui";
 import { customerWhatsapp, dateDe, days, errorMessage, relativeTime, useAdminFleet, useBookings, useDeleteBooking, useSaveBooking } from "@/lib/admin-data";
 import { BOOKING_STATUS, type BookingStatus } from "@/lib/bookings";
-import { aedToEur, formatEur } from "@/lib/pricing";
+import { formatAed, formatMoney } from "@/lib/pricing";
 import { carTitle } from "@/lib/site-data";
 
 export const Route = createFileRoute("/admin/reservierungen/$id")({ component: BookingDetail });
@@ -17,13 +17,13 @@ type Draft = {
   start_date: string;
   end_date: string;
   location: string;
-  price_per_day_eur: string;
-  total_eur: string;
+  price_per_day_aed: string;
+  total_aed: string;
   notes: string;
   admin_notes: string;
 };
 
-const EMPTY: Draft = { status: "bestaetigt", car_slug: "", customer_name: "", customer_phone: "", start_date: "", end_date: "", location: "", price_per_day_eur: "", total_eur: "", notes: "", admin_notes: "" };
+const EMPTY: Draft = { status: "bestaetigt", car_slug: "", customer_name: "", customer_phone: "", start_date: "", end_date: "", location: "", price_per_day_aed: "", total_aed: "", notes: "", admin_notes: "" };
 
 function BookingDetail() {
   const { id } = Route.useParams();
@@ -46,8 +46,8 @@ function BookingDetail() {
       start_date: booking.start_date ?? "",
       end_date: booking.end_date ?? "",
       location: booking.location ?? "",
-      price_per_day_eur: booking.price_per_day_eur ? String(booking.price_per_day_eur) : "",
-      total_eur: booking.total_eur ? String(booking.total_eur) : "",
+      price_per_day_aed: booking.price_per_day_aed ? String(booking.price_per_day_aed) : "",
+      total_aed: booking.total_aed ? String(booking.total_aed) : "",
       notes: booking.notes ?? "",
       admin_notes: booking.admin_notes ?? "",
     };
@@ -60,21 +60,22 @@ function BookingDetail() {
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => setDraft({ ...draft, [key]: value });
   const car = fleet.all.find((c) => c.slug === draft.car_slug);
   const rentalDays = days(draft.start_date || null, draft.end_date || null);
-  const total = Number(draft.total_eur) || 0;
-  const mkrCost = car && rentalDays ? Math.round(aedToEur(car.baseDailyAed, settings)) * rentalDays : 0;
+  const total = Number(draft.total_aed) || 0;
+  const mkrCost = car && rentalDays ? car.baseDailyAed * rentalDays : 0;
+  const eur = (aed: number) => formatMoney(aed, "EUR", "de", settings.aedPerEur);
   const dirty = isNew ? Boolean(draft.customer_name || draft.customer_phone) : JSON.stringify(draft) !== JSON.stringify(saved);
   const datesInvalid = Boolean(draft.start_date && draft.end_date && draft.end_date < draft.start_date);
 
   function pickCar(slug: string) {
     const picked = fleet.all.find((c) => c.slug === slug);
-    const perDay = picked ? String(picked.price) : draft!.price_per_day_eur;
-    setDraft({ ...draft!, car_slug: slug, price_per_day_eur: perDay, total_eur: picked && rentalDays ? String(picked.price * rentalDays) : draft!.total_eur });
+    const perDay = picked ? String(picked.price) : draft!.price_per_day_aed;
+    setDraft({ ...draft!, car_slug: slug, price_per_day_aed: perDay, total_aed: picked && rentalDays ? String(picked.price * rentalDays) : draft!.total_aed });
   }
 
   function recalc() {
-    const perDay = Number(draft!.price_per_day_eur);
+    const perDay = Number(draft!.price_per_day_aed);
     if (!perDay || !rentalDays) return toast("Bitte Zeitraum und Preis pro Tag angeben", true);
-    set("total_eur", String(perDay * rentalDays));
+    set("total_aed", String(perDay * rentalDays));
   }
 
   function submit() {
@@ -90,8 +91,8 @@ function BookingDetail() {
       start_date: draft.start_date || null,
       end_date: draft.end_date || null,
       location: draft.location.trim() || null,
-      price_per_day_eur: draft.price_per_day_eur ? Number(draft.price_per_day_eur) : null,
-      total_eur: draft.total_eur ? Number(draft.total_eur) : null,
+      price_per_day_aed: draft.price_per_day_aed ? Number(draft.price_per_day_aed) : null,
+      total_aed: draft.total_aed ? Number(draft.total_aed) : null,
       notes: draft.notes.trim() || null,
       admin_notes: draft.admin_notes.trim() || null,
     };
@@ -154,13 +155,14 @@ function BookingDetail() {
       </Section>
 
       <Section title="Preis" action={<button type="button" onClick={recalc}><Calculator style={{ width: 15, height: 15, verticalAlign: "-2px" }} /> Neu berechnen</button>}>
-        <Field label="Preis pro Tag"><span className="adm-field-inline"><input inputMode="numeric" value={draft.price_per_day_eur} onChange={(e) => set("price_per_day_eur", e.target.value.replace(/[^\d]/g, ""))} placeholder={car ? String(car.price) : "0"} /><em>€</em></span></Field>
-        <Field label="Gesamtpreis"><span className="adm-field-inline"><input inputMode="numeric" value={draft.total_eur} onChange={(e) => set("total_eur", e.target.value.replace(/[^\d]/g, ""))} placeholder="0" /><em>€</em></span></Field>
+        <Field label="Preis pro Tag"><span className="adm-field-inline"><input inputMode="numeric" value={draft.price_per_day_aed} onChange={(e) => set("price_per_day_aed", e.target.value.replace(/[^\d]/g, ""))} placeholder={car ? String(car.price) : "0"} /><em>AED</em></span></Field>
+        <Field label="Gesamtpreis"><span className="adm-field-inline"><input inputMode="numeric" value={draft.total_aed} onChange={(e) => set("total_aed", e.target.value.replace(/[^\d]/g, ""))} placeholder="0" /><em>AED</em></span></Field>
         {total > 0 && mkrCost > 0 && (
           <dl className="adm-kv">
-            <dt>Kunde zahlt</dt><dd>{formatEur(total)}</dd>
-            <dt>An MKR ({rentalDays} × {formatEur(Math.round(aedToEur(car!.baseDailyAed, settings)))})</dt><dd>− {formatEur(mkrCost)}</dd>
-            <dt className="total">Deine Provision</dt><dd className="total" style={{ color: total - mkrCost > 0 ? "var(--a-green)" : "var(--a-red)" }}>{formatEur(total - mkrCost)}</dd>
+            <dt>Kunde zahlt</dt><dd>{formatAed(total)}</dd>
+            <dt>An MKR ({rentalDays} × {formatAed(car!.baseDailyAed)})</dt><dd>− {formatAed(mkrCost)}</dd>
+            <dt className="total">Deine Provision</dt><dd className="total" style={{ color: total - mkrCost > 0 ? "var(--a-green)" : "var(--a-red)" }}>{formatAed(total - mkrCost)}</dd>
+            <dt>In Euro (ca.)</dt><dd>{eur(total - mkrCost)}</dd>
           </dl>
         )}
       </Section>

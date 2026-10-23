@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { bookingMessage, CarCard } from "@/components/car-card";
 import { Rail } from "@/components/car-rail";
 import { CarImage } from "@/components/car-image";
+import { CurrencyToggle } from "@/components/currency-toggle";
 import { FaqList } from "@/components/faq-list";
 import { getCarContent, renderPrices } from "@/lib/car-content";
 import { useLanguage } from "@/lib/language";
-import { feeEur, formatEur } from "@/lib/pricing";
+import { formatMoney } from "@/lib/pricing";
 import { deliveryFees, documents, rentalTerms } from "@/lib/site-content";
 import { loadSiteConfig } from "@/lib/site-config";
 import { buildFleet, carSummary, carTitle, categoryLabel, colorLabel, type Car } from "@/lib/site-data";
-import { useSite } from "@/lib/use-site";
+import { useMoney, useSite } from "@/lib/use-site";
 
 export const Route = createFileRoute("/fleet_/$slug")({
   loader: async ({ params }) => {
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/fleet_/$slug")({
   },
   head: ({ loaderData }) => {
     const car = loaderData?.car;
-    const title = car ? `${carTitle(car)} mieten in Dubai ab ${formatEur(car.price)}/Tag — ARDADAGCI` : "Fahrzeug nicht verfügbar — ARDADAGCI";
+    const title = car ? `${carTitle(car)} mieten in Dubai ab ${formatMoney(car.price)}/Tag — ARDADAGCI` : "Fahrzeug nicht verfügbar — ARDADAGCI";
     const description = car ? carSummary(car, "de") : "Entdecken Sie die ARDADAGCI Flotte.";
     return {
       meta: [
@@ -42,7 +43,8 @@ export const Route = createFileRoute("/fleet_/$slug")({
 function CarPage() {
   const { language, t } = useLanguage();
   const { car, content } = Route.useLoaderData();
-  const { fleet: { cars }, config, contact } = useSite();
+  const { fleet: { cars }, contact } = useSite();
+  const money = useMoney();
   const similar = cars.filter((c) => c.slug !== car.slug && (c.category === car.category || c.brand === car.brand)).slice(0, 10);
   const specs: [typeof Gauge, string, string | number | null][] = [
     [CircleGauge, t("Motor", "Engine"), car.engine],
@@ -57,9 +59,9 @@ function CarPage() {
     [CarIcon, t("Kategorie", "Category"), categoryLabel(car.category, language)],
   ];
   const facts = [
-    { icon: ShieldCheck, label: t("Kaution", "Deposit"), value: car.deposit === "none" ? t("Keine Kaution", "No deposit") : `AED ${car.deposit}` },
+    { icon: ShieldCheck, label: t("Kaution", "Deposit"), value: car.deposit === "none" ? t("Keine Kaution", "No deposit") : money(Number(car.deposit)) },
     { icon: RouteIcon, label: t("Inklusive", "Included"), value: `${car.mileageLimitKm ?? 250} km / ${t("Tag", "day")}` },
-    { icon: Gauge, label: t("Zusatz-km", "Extra km"), value: car.extraKmEur ? `${formatEur(car.extraKmEur, language)} / km` : "–" },
+    { icon: Gauge, label: t("Zusatz-km", "Extra km"), value: car.extraKmAed ? `${money(car.extraKmAed)} / km` : "–" },
     { icon: CreditCard, label: t("Zahlung", "Payment"), value: t("Karte, Bar, Krypto", "Card, cash, crypto") },
   ];
 
@@ -79,11 +81,12 @@ function CarPage() {
             <h1>{car.name}</h1>
             <div className="vehicle-tags">
               {car.color && <span className="chip">{colorLabel(car.color, language)}</span>}
-              {car.deposit === "none" && <span className="chip chip-solid">{t("0 € Kaution", "No deposit")}</span>}
+              {car.deposit === "none" && <span className="chip chip-solid">{t("Keine Kaution", "No deposit")}</span>}
               {car.available ? <span className="chip">{t("Sofort anfragbar", "Request instantly")}</span> : <span className="chip chip-warn">{t("Derzeit vermietet", "Currently rented")}</span>}
             </div>
+            <CurrencyToggle className="price-currency" />
             <div className="price-box">
-              <div><small>{t("Tagespreis", "Daily rate")}</small><strong>{formatEur(car.price, language)}</strong><small>{t("inkl. MwSt.", "incl. VAT")}</small></div>
+              <div><small>{t("Tagespreis", "Daily rate")}</small><strong>{money(car.price)}</strong><small>{t("inkl. MwSt.", "incl. VAT")}</small></div>
               <div><small>{t("Wöchentlich", "Weekly")}</small><b>{t("Auf Anfrage", "On request")}</b></div>
               <div><small>{t("Monatlich", "Monthly")}</small><b>{t("Auf Anfrage", "On request")}</b></div>
             </div>
@@ -117,7 +120,7 @@ function CarPage() {
             {content.faqs.length > 0 && (
               <div className="vehicle-faq" lang="en">
                 <h2>{t(`Häufige Fragen zum ${carTitle(car)}`, `${carTitle(car)} – FAQ`)}</h2>
-                <FaqList items={content.faqs.map((f) => ({ q: renderPrices(f.q, language), a: renderPrices(f.a, language) }))} />
+                <FaqList items={content.faqs.map((f) => ({ q: renderPrices(f.q, money), a: renderPrices(f.a, money) }))} />
               </div>
             )}
           </article>
@@ -134,7 +137,7 @@ function CarPage() {
             </div>
             <div className="info-card">
               <h3>{t("Lieferung & Abholung", "Delivery & pick-up")}</h3>
-              <dl>{deliveryFees.map((fee) => <div key={fee.label.en}><dt>{fee.label[language]}</dt><dd>{formatEur(feeEur(fee.aed, config.settings), language)}</dd></div>)}</dl>
+              <dl>{deliveryFees.map((fee) => <div key={fee.label.en}><dt>{fee.label[language]}</dt><dd>{money(fee.aed)}</dd></div>)}</dl>
             </div>
           </aside>
         </div>
@@ -151,7 +154,7 @@ function CarPage() {
 }
 
 function Blocks({ blocks }: { blocks: { t: string; x: string }[] }) {
-  const { language } = useLanguage();
+  const money = useMoney();
   const out: React.ReactNode[] = [];
   let list: string[] = [];
   const flush = (key: number) => {
@@ -159,7 +162,7 @@ function Blocks({ blocks }: { blocks: { t: string; x: string }[] }) {
     list = [];
   };
   blocks.forEach((block, i) => {
-    const text = renderPrices(block.x, language);
+    const text = renderPrices(block.x, money);
     if (block.t === "li") { list.push(text); return; }
     flush(i);
     out.push(block.t === "h" ? <h3 key={i}>{text}</h3> : <p key={i}>{text}</p>);

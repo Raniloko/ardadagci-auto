@@ -3,7 +3,7 @@ import { ChevronRight, Inbox, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Empty, LargeTitle, Segmented, StatusPill, TopBar } from "@/components/admin/ui";
 import { dateDe, days, relativeTime, useBookings } from "@/lib/admin-data";
-import { formatEur } from "@/lib/pricing";
+import { formatAed } from "@/lib/pricing";
 
 type Filter = "offen" | "bestaetigt" | "archiv" | "alle";
 
@@ -56,7 +56,7 @@ function BookingsPage() {
                   <span>{b.car_label ?? "Fahrzeug offen"}</span>
                   <span>
                     {b.start_date ? `${dateDe(b.start_date)} – ${dateDe(b.end_date)}${n ? ` · ${n} ${n === 1 ? "Tag" : "Tage"}` : ""}` : "Zeitraum offen"}
-                    {b.total_eur ? ` · ${formatEur(b.total_eur)}` : ""}
+                    {b.total_aed ? ` · ${formatAed(b.total_aed)}` : ""}
                   </span>
                   <span style={{ fontSize: 12.5 }}>{b.source === "admin" ? "Manuell angelegt" : "Website"} · {relativeTime(b.created_at)}</span>
                 </div>

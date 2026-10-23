@@ -117,6 +117,9 @@ h1, h2, h3 { font-family: var(--display); font-stretch: 112%; letter-spacing: -.
 .language-toggle { display: flex; padding: 3px; border: 1px solid var(--line-strong); border-radius: 999px; }
 .language-toggle button { height: 32px; padding: 0 11px; border: 0; border-radius: 999px; background: none; color: var(--muted); font-size: 12px; font-weight: 600; }
 .language-toggle button.active { background: var(--text); color: #070707; }
+.toolbar-currency, .price-currency { display: none; }
+.mobile-nav-pref { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 15px; }
+.mobile-nav-pref .language-toggle button { height: 36px; padding: 0 16px; font-size: 13px; }
 .header-phone { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line-strong); border-radius: 999px; }
 .header-phone svg { width: 16px; height: 16px; }
 .header-cta { height: 40px; font-size: 13px; }
@@ -504,6 +507,10 @@ a.contact-card:hover { border-color: var(--line-strong); background: var(--surfa
   .brand-mark small { margin-top: 3px; font-size: 8.5px; letter-spacing: .28em; }
   .header-cta { display: none; }
   .language-toggle button { height: 30px; padding: 0 9px; }
+  .header-currency { display: none; }
+  .toolbar-currency { display: flex; flex: none; margin-left: auto; }
+  .price-currency { display: flex; width: max-content; margin-top: 20px; }
+  .price-currency + .price-box { margin-top: 10px; }
   /* Phones: photo first so the car stays visible, text and search below it. */
   .hero { --photo: clamp(320px, 100vw, 470px); display: block; min-height: 0; padding-bottom: 36px; }
   .hero-image { inset: 0 0 auto; height: var(--photo); object-position: 88% 50%; }

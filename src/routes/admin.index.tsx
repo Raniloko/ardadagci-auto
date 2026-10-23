@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarCheck, CarFront, ChevronRight, Euro, EyeOff, Inbox, Plus, Smartphone, TrendingUp } from "lucide-react";
+import { Banknote, CalendarCheck, CarFront, ChevronRight, EyeOff, Inbox, Plus, Smartphone, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Empty, LargeTitle, Section, StatusPill, TopBar } from "@/components/admin/ui";
 import { dateDe, days, relativeTime, useAdminFleet, useBookings } from "@/lib/admin-data";
-import { aedToEur, formatEur } from "@/lib/pricing";
+import { formatAed, formatMoney } from "@/lib/pricing";
 
 export const Route = createFileRoute("/admin/")({ component: Overview });
 
@@ -13,12 +13,12 @@ function Overview() {
   const list = bookings.data ?? [];
   const open = list.filter((b) => b.status === "neu");
   const confirmed = list.filter((b) => b.status === "bestaetigt" || b.status === "abgeschlossen");
-  const revenue = confirmed.reduce((sum, b) => sum + (b.total_eur ?? 0), 0);
+  const revenue = confirmed.reduce((sum, b) => sum + (b.total_aed ?? 0), 0);
   const commission = confirmed.reduce((sum, b) => {
     const car = fleet.all.find((c) => c.slug === b.car_slug);
     const rentalDays = days(b.start_date, b.end_date);
-    if (!car || !b.total_eur || !rentalDays) return sum;
-    return sum + b.total_eur - Math.round(aedToEur(car.baseDailyAed, settings)) * rentalDays;
+    if (!car || !b.total_aed || !rentalDays) return sum;
+    return sum + b.total_aed - car.baseDailyAed * rentalDays;
   }, 0);
   const hidden = fleet.all.filter((c) => c.hidden).length;
   const rented = fleet.all.filter((c) => !c.available && !c.hidden).length;
@@ -31,8 +31,8 @@ function Overview() {
       <div className="adm-stats">
         <Stat icon={<Inbox />} label="Neue Anfragen" value={String(open.length)} hint={open.length ? "warten auf Antwort" : "alles beantwortet"} to="/admin/reservierungen" />
         <Stat icon={<CalendarCheck />} label="Bestätigt" value={String(confirmed.length)} hint="Buchungen gesamt" to="/admin/reservierungen" />
-        <Stat icon={<Euro />} label="Umsatz" value={formatEur(revenue)} hint="bestätigte Buchungen" />
-        <Stat icon={<TrendingUp />} label="Provision" value={formatEur(commission)} hint="geschätzt, nach MKR-Kosten" />
+        <Stat icon={<Banknote />} label="Umsatz" value={formatAed(revenue)} hint={`≈ ${formatMoney(revenue, "EUR", "de", settings.aedPerEur)} · bestätigt`} />
+        <Stat icon={<TrendingUp />} label="Provision" value={formatAed(commission)} hint={`≈ ${formatMoney(commission, "EUR", "de", settings.aedPerEur)} · nach MKR-Kosten`} />
       </div>
 
       <Section title="Fahrzeuge" action={<Link to="/admin/fahrzeuge">Alle</Link>}>

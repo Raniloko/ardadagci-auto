@@ -11,4 +11,5 @@
 - [x] Full MKR (Masterkey Rent A Car) fleet import: 175 vehicles, galleries, specs, descriptions and FAQs (`scripts/sync-mkr-fleet.py`)
 - [x] Commission pricing: MKR price + ARDADAGCI markup, shown in EUR (`src/lib/pricing.ts`)
 - [x] Complete UI redesign: cinematic hero, brand/category discovery, category rails, filters with URL state, detail gallery, booking estimate
-- [ ] Confirm real WhatsApp number, e-mail and social links in `src/lib/site-data.ts`
+- [x] WhatsApp number set (+49 172 6023003)
+- [ ] Confirm phone number, e-mail and social links in `src/lib/site-data.ts`

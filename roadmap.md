@@ -13,4 +13,4 @@
 - [x] Complete UI redesign: cinematic hero, brand/category discovery, category rails, filters with URL state, detail gallery, booking estimate
 - [x] WhatsApp number set (+49 172 6023003)
 - [x] Phone +49 172 6023003, TikTok @ardaadagcii, Instagram removed
-- [ ] Confirm e-mail address in `src/lib/site-data.ts`
+- [ ] E-mail hidden for now – set `EMAIL` in `src/lib/site-data.ts` once the mailbox exists

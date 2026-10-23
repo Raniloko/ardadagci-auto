@@ -23,7 +23,7 @@ function Page() {
   const channels = [
     { icon: MessageCircle, title: "WhatsApp", text: t("Schnellste Antwort, 24 Stunden", "Fastest response, 24 hours"), href: whatsappUrl() },
     { icon: Phone, title: t("Telefon", "Phone"), text: PHONE_DISPLAY, href: `tel:${PHONE_NUMBER}` },
-    { icon: Mail, title: "E-Mail", text: EMAIL, href: `mailto:${EMAIL}` },
+    ...(EMAIL ? [{ icon: Mail, title: "E-Mail", text: EMAIL, href: `mailto:${EMAIL}` }] : []),
     { icon: MapPin, title: "Dubai", text: t("Lieferung in alle Emirate", "Delivery across the UAE") },
   ];
   return (

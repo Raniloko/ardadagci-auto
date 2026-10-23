@@ -9,11 +9,13 @@ import { getCarContent, renderPrices } from "@/lib/car-content";
 import { useLanguage } from "@/lib/language";
 import { feeEur, formatEur } from "@/lib/pricing";
 import { deliveryFees, documents, rentalTerms } from "@/lib/site-content";
-import { carSummary, carTitle, cars, categoryLabel, colorLabel, findCar, PHONE_NUMBER, whatsappUrl, type Car } from "@/lib/site-data";
+import { loadSiteConfig } from "@/lib/site-config";
+import { buildFleet, carSummary, carTitle, categoryLabel, colorLabel, type Car } from "@/lib/site-data";
+import { useSite } from "@/lib/use-site";
 
 export const Route = createFileRoute("/fleet_/$slug")({
   loader: async ({ params }) => {
-    const car = findCar(params.slug);
+    const car = buildFleet(await loadSiteConfig()).findCar(params.slug);
     if (!car) throw notFound();
     const content = await getCarContent({ data: car.slug });
     return { car, content };
@@ -40,6 +42,7 @@ export const Route = createFileRoute("/fleet_/$slug")({
 function CarPage() {
   const { language, t } = useLanguage();
   const { car, content } = Route.useLoaderData();
+  const { fleet: { cars }, config, contact } = useSite();
   const similar = cars.filter((c) => c.slug !== car.slug && (c.category === car.category || c.brand === car.brand)).slice(0, 10);
   const specs: [typeof Gauge, string, string | number | null][] = [
     [CircleGauge, t("Motor", "Engine"), car.engine],
@@ -77,19 +80,20 @@ function CarPage() {
             <div className="vehicle-tags">
               {car.color && <span className="chip">{colorLabel(car.color, language)}</span>}
               {car.deposit === "none" && <span className="chip chip-solid">{t("0 € Kaution", "No deposit")}</span>}
-              <span className="chip">{t("Sofort anfragbar", "Request instantly")}</span>
+              {car.available ? <span className="chip">{t("Sofort anfragbar", "Request instantly")}</span> : <span className="chip chip-warn">{t("Derzeit vermietet", "Currently rented")}</span>}
             </div>
             <div className="price-box">
               <div><small>{t("Tagespreis", "Daily rate")}</small><strong>{formatEur(car.price, language)}</strong><small>{t("inkl. MwSt.", "incl. VAT")}</small></div>
               <div><small>{t("Wöchentlich", "Weekly")}</small><b>{t("Auf Anfrage", "On request")}</b></div>
               <div><small>{t("Monatlich", "Monthly")}</small><b>{t("Auf Anfrage", "On request")}</b></div>
             </div>
+            {!car.available && <p className="rented-note">{t("Dieses Fahrzeug ist gerade vermietet. Fragen Sie gern für spätere Termine an – wir melden uns sofort.", "This car is currently rented out. Feel free to request later dates – we will get back to you right away.")}</p>}
             <ul className="fact-list">{facts.map((f) => <li key={f.label}><f.icon /><span>{f.label}</span><strong>{f.value}</strong></li>)}</ul>
             <div className="panel-actions">
-              <a className="btn btn-whatsapp btn-lg" href={whatsappUrl(bookingMessage(car, language))} target="_blank" rel="noreferrer"><MessageCircle />{t("Per WhatsApp buchen", "Book via WhatsApp")}</a>
+              <a className="btn btn-whatsapp btn-lg" href={contact.whatsappUrl(bookingMessage(car, language))} target="_blank" rel="noreferrer"><MessageCircle />{t("Per WhatsApp buchen", "Book via WhatsApp")}</a>
               <div className="panel-actions-row">
                 <Link to="/booking" search={{ car: car.slug }} className="btn btn-light"><CalendarCheck />{t("Anfrage senden", "Send request")}</Link>
-                <a href={`tel:${PHONE_NUMBER}`} className="btn btn-outline"><Phone />{t("Anrufen", "Call")}</a>
+                <a href={`tel:${contact.phoneNumber}`} className="btn btn-outline"><Phone />{t("Anrufen", "Call")}</a>
               </div>
             </div>
           </aside>
@@ -130,7 +134,7 @@ function CarPage() {
             </div>
             <div className="info-card">
               <h3>{t("Lieferung & Abholung", "Delivery & pick-up")}</h3>
-              <dl>{deliveryFees.map((fee) => <div key={fee.label.en}><dt>{fee.label[language]}</dt><dd>{formatEur(feeEur(fee.aed), language)}</dd></div>)}</dl>
+              <dl>{deliveryFees.map((fee) => <div key={fee.label.en}><dt>{fee.label[language]}</dt><dd>{formatEur(feeEur(fee.aed, config.settings), language)}</dd></div>)}</dl>
             </div>
           </aside>
         </div>

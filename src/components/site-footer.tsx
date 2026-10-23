@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, MessageCircle, Music2, Phone } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-import { brands, categories, EMAIL, PHONE_DISPLAY, PHONE_NUMBER, TIKTOK_HANDLE, TIKTOK_URL, whatsappUrl } from "@/lib/site-data";
+import { useSite } from "@/lib/use-site";
 
 export function SiteFooter() {
   const { language, t } = useLanguage();
+  const { fleet: { brands, categories }, contact } = useSite();
   return (
     <footer className="site-footer">
       <div className="site-shell footer-top">
@@ -12,8 +13,8 @@ export function SiteFooter() {
           <Link to="/" className="brand-mark"><img src="/ardadagci-mark.png" alt="" width={260} height={192} /><span><strong>ARDADAGCI</strong><small>Dubai Car Rental</small></span></Link>
           <p>{t("Luxus- und Sportwagen in Dubai – ohne Kaution, mit Lieferung und persönlichem Service auf Deutsch.", "Luxury and sports cars in Dubai – no deposit, delivered, with personal service.")}</p>
           <div className="footer-social">
-            <a href={TIKTOK_URL} target="_blank" rel="noreferrer" aria-label={`TikTok ${TIKTOK_HANDLE}`}><Music2 /></a>
-            <a href={whatsappUrl()} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle /></a>
+            {contact.tiktokUrl && <a href={contact.tiktokUrl} target="_blank" rel="noreferrer" aria-label={`TikTok ${contact.tiktokHandle}`}><Music2 /></a>}
+            <a href={contact.whatsappUrl()} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle /></a>
           </div>
         </div>
         <div>
@@ -26,8 +27,8 @@ export function SiteFooter() {
         </div>
         <div>
           <h3>{t("Kontakt", "Contact")}</h3>
-          <a href={`tel:${PHONE_NUMBER}`}><Phone />{PHONE_DISPLAY}</a>
-          {EMAIL && <a href={`mailto:${EMAIL}`}><Mail />{EMAIL}</a>}
+          <a href={`tel:${contact.phoneNumber}`}><Phone />{contact.phoneDisplay}</a>
+          {contact.email && <a href={`mailto:${contact.email}`}><Mail />{contact.email}</a>}
           <span><MapPin />Dubai, {t("Vereinigte Arabische Emirate", "United Arab Emirates")}</span>
           <Link to="/booking" search={{ car: "" }}>{t("Reservierung anfragen", "Request a booking")}</Link>
         </div>

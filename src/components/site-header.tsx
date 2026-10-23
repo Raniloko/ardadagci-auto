@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, Phone, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/language";
-import { PHONE_NUMBER } from "@/lib/site-data";
+import { useSite } from "@/lib/use-site";
 
 const links = [
   ["Flotte", "Fleet", "/fleet"], ["Über uns", "About", "/about"], ["Bewertungen", "Reviews", "/reviews"],
@@ -11,6 +11,7 @@ const links = [
 
 export function SiteHeader() {
   const { language, setLanguage, t } = useLanguage();
+  const { contact } = useSite();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -39,7 +40,7 @@ export function SiteHeader() {
           <div className="language-toggle" role="group" aria-label={t("Sprache wählen", "Choose language")}>
             {(["de", "en"] as const).map((code) => <button key={code} type="button" aria-pressed={language === code} className={language === code ? "active" : ""} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>)}
           </div>
-          <a className="header-phone" href={`tel:${PHONE_NUMBER}`} aria-label={t("Anrufen", "Call us")}><Phone /></a>
+          <a className="header-phone" href={`tel:${contact.phoneNumber}`} aria-label={t("Anrufen", "Call us")}><Phone /></a>
           <Link to="/booking" search={{ car: "" }} className="btn btn-light header-cta">{t("Jetzt buchen", "Book now")}</Link>
           <button type="button" className="menu-trigger" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={open ? t("Menü schließen", "Close menu") : t("Menü öffnen", "Open menu")}>{open ? <X /> : <Menu />}</button>
         </div>

@@ -3,7 +3,8 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CarCard } from "@/components/car-card";
 import { useLanguage } from "@/lib/language";
-import { brands, carTitle, cars, categories } from "@/lib/site-data";
+import { baseFleet, carTitle } from "@/lib/site-data";
+import { useSite } from "@/lib/use-site";
 
 type Sort = "recommended" | "price-asc" | "price-desc";
 type FleetSearch = { category?: string; brand?: string; q?: string; sort?: Sort };
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/fleet")({
   head: () => ({
     meta: [
       { title: "Flotte — Luxusautos mieten in Dubai | ARDADAGCI" },
-      { name: "description", content: `${cars.length} Luxusautos, Sportwagen, Cabrios und SUVs zur Miete in Dubai – ohne Kaution. Filtern nach Marke, Kategorie und Preis.` },
+      { name: "description", content: `${baseFleet.length} Luxusautos, Sportwagen, Cabrios und SUVs zur Miete in Dubai – ohne Kaution. Filtern nach Marke, Kategorie und Preis.` },
       { property: "og:title", content: "Flotte — ARDADAGCI Dubai" },
       { property: "og:description", content: "Lamborghini, Ferrari, Rolls-Royce, Mercedes G63 und mehr in Dubai mieten." },
       { property: "og:type", content: "website" },
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/fleet")({
 
 function FleetPage() {
   const { language, t } = useLanguage();
+  const { brands, cars, categories } = useSite().fleet;
   const search = Route.useSearch();
   const navigate = useNavigate({ from: "/fleet" });
   const [query, setQuery] = useState(search.q ?? "");
@@ -60,7 +62,7 @@ function FleetPage() {
     if (search.sort === "price-asc") return [...list].sort((a, b) => a.price - b.price);
     if (search.sort === "price-desc") return [...list].sort((a, b) => b.price - a.price);
     return list;
-  }, [search]);
+  }, [search, cars]);
 
   const activeCategory = categories.find((c) => c.id === search.category);
   const hasFilters = Boolean(search.category || search.brand || search.q);

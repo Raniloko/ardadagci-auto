@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -15,6 +16,7 @@ import { SiteHeader } from "../components/site-header";
 import { SiteFooter } from "../components/site-footer";
 import { FloatingContact } from "../components/floating-contact";
 import { LanguageProvider } from "../lib/language";
+import { loadSiteConfig } from "../lib/site-config";
 
 function NotFoundComponent() {
   return (
@@ -98,6 +100,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Inter:wght@400;500;600&display=swap" },
     ],
   }),
+  // Admin settings and car overrides from the database, shared by every page.
+  loader: () => loadSiteConfig(),
+  staleTime: 15_000,
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -120,10 +125,13 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const isAdmin = useRouterState({ select: (s) => s.location.pathname.startsWith("/admin") });
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider><div className="app-shell"><SiteHeader /><main><Outlet /></main><SiteFooter /><FloatingContact /></div></LanguageProvider>
+      <LanguageProvider>
+        {isAdmin ? <Outlet /> : <div className="app-shell"><SiteHeader /><main><Outlet /></main><SiteFooter /><FloatingContact /></div>}
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

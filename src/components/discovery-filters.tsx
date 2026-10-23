@@ -2,10 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useLanguage } from "@/lib/language";
 import { formatEur } from "@/lib/pricing";
-import { brands, categories } from "@/lib/site-data";
+import { useSite } from "@/lib/use-site";
 
 export function CategoryTiles() {
   const { language, t } = useLanguage();
+  const { categories } = useSite().fleet;
   return (
     <div className="category-grid">
       {categories.map((c) => (
@@ -24,6 +25,7 @@ const RESUME_AFTER = 1600; // ms after the last touch/drag
 /** Endless, self-scrolling brand row. Swipe or drag in either direction – it never ends. */
 export function BrandMarquee() {
   const { t } = useLanguage();
+  const { brands } = useSite().fleet;
   const ref = useRef<HTMLDivElement>(null);
   const drag = useRef({ active: false, moved: false, x: 0, left: 0 });
 

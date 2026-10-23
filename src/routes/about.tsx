@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import founderImage from "@/assets/founder-arda.jpg";
 import { PageIntro } from "@/components/page-intro";
 import { useLanguage } from "@/lib/language";
-import { fleetStats } from "@/lib/site-data";
+import { useSite } from "@/lib/use-site";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/about")({
 
 function Page() {
   const { t } = useLanguage();
+  const { fleetStats } = useSite().fleet;
   const values = [t("Kuratiert, nie überladen", "Curated, never crowded"), t("Service ohne Skript", "Service without scripts"), t("Zustand vor Kompromiss", "Condition over compromise"), t("Dubai-Know-how", "Dubai knowledge")];
   return (
     <>

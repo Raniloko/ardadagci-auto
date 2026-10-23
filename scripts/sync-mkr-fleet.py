@@ -99,6 +99,23 @@ def model_of(name, brand):
     return model
 
 
+COLOR_WORDS = r"(?:Black|White|Gr[ae]y|Blue|Green|Red|Yellow|Orange|Purple|Silver|Beige|Brown)"
+MODEL_NAMES = {  # manufacturer spelling for MKR's model names
+    "Rs6": "RS 6", "RS7": "RS 7", "RS 3": "RS 3", "RSQ8": "RS Q8", "RSQ8 Performance": "RS Q8 Performance",
+    "E class": "E-Klasse", "G Wagon": "G-Wagon", "A200": "A 200", "C200": "C 200", "C200 Chrome": "C 200 Chrome",
+    "C300 Convertible": "C 300 Cabriolet", "S500": "S 500", "E63s": "E 63 S", "GT63S": "AMG GT 63 S",
+    "Evo Spyder": "Huracán EVO Spyder", "Evo Joker Edition": "Huracán EVO Joker Edition",
+    "Huracan STO": "Huracán STO", "Huracan Tecnica": "Huracán Tecnica",
+    "SF 90": "SF90 Stradale", "812 SuperFast": "812 Superfast", "911 Carrera 4s": "911 Carrera 4S",
+}
+
+
+def display_model(model):
+    """Clean model name for the website: colour lives in its own field (except editions like "Black Badge")."""
+    model = re.sub(r"\s+" + COLOR_WORDS + r"$", "", model) if not model.endswith("Black Badge") else model
+    return MODEL_NAMES.get(model, model)
+
+
 def value(raw):
     raw = (raw or "").strip()
     return None if not raw or raw.lower() in ("yes", "no", "-") else raw
@@ -271,7 +288,7 @@ def main():
         used.add(slug)
         zero = value(s.get("0-100"))
         cars.append({
-            "slug": slug, "brand": brand, "name": model_of(p["name"], brand), "title": p["name"], "category": category,
+            "slug": slug, "brand": brand, "name": display_model(model_of(p["name"], brand)), "title": p["name"], "category": category,
             "baseDailyAed": p["price"], "color": color, "engine": value(s.get("Engine")), "drive": value(s.get("Drive")),
             "fuel": value(s.get("Fuel")), "transmission": value(s.get("Transmission")),
             "seats": int(s["Seats"]) if (s.get("Seats") or "").isdigit() else None,

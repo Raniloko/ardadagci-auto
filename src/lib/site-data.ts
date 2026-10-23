@@ -41,7 +41,11 @@ export const cars: Car[] = fleet
     extraKmEur: extraKmAed ? feeEur(extraKmAed) : null,
     featured: FEATURED.includes(car.slug),
   }))
-  .sort((a, b) => Number(b.featured) - Number(a.featured) || (a.featured ? FEATURED.indexOf(a.slug) - FEATURED.indexOf(b.slug) : b.price - a.price));
+  // Highlights first, then by price; colour variants of the same model stay next to each other.
+  .sort((a, b) =>
+    Number(b.featured) - Number(a.featured) ||
+    (a.featured ? FEATURED.indexOf(a.slug) - FEATURED.indexOf(b.slug) : b.price - a.price) ||
+    `${a.brand} ${a.name} ${a.color ?? ""}`.localeCompare(`${b.brand} ${b.name} ${b.color ?? ""}`));
 
 export const featuredCars = FEATURED.map((slug) => cars.find((car) => car.slug === slug)).filter((car): car is Car => Boolean(car));
 

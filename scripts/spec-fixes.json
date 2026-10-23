@@ -1,25 +1,104 @@
 {
   "_comment": "Corrections for obvious errors in MKR's spec tables, applied by sync-mkr-fleet.py (key = MKR car title).",
-  "Ferrari 296 GTS": { "engine": "V6 Hybrid", "fuel": "Petrol", "drive": "RWD", "seats": 2, "doors": 2 },
-  "Ferrari 296 GTB": { "engine": "V6 Hybrid" },
-  "Ferrari 812 GTS": { "drive": "RWD" },
-  "McLaren Artura": { "engine": "V6 Hybrid" },
-  "McLaren Artura Gray": { "engine": "V6 Hybrid", "seats": 2, "doors": 2 },
-  "Mclaren Artura Green": { "engine": "V6 Hybrid", "drive": "RWD" },
-  "Mclaren Artura Orange": { "engine": "V6 Hybrid" },
-  "McLaren Artura Spider": { "engine": "V6 Hybrid" },
-  "Mclaren Artura Yellow": { "engine": "V6 Hybrid" },
-  "Lamborghini Urus Performante": { "drive": "AWD" },
-  "Landrover Defender V8": { "engine": "V8" },
-  "Brabus G800 Kit": { "engine": "V8" },
-  "BMW X4": { "zeroToHundred": 6.4 },
-  "BMW 420i Convertible": { "engine": "2.0 L Turbo I4" },
-  "Mercedes C300 Convertible": { "engine": "2.0 L Turbo I4" },
-  "Mercedes E 300": { "engine": "2.0 L Turbo I4" },
-  "Mercedes E class": { "engine": "2.0 L Turbo I4", "zeroToHundred": null },
-  "Mercedes GLC 200": { "engine": "2.0 L Turbo I4" },
-  "Mercedes GLC 200 Coupe": { "engine": "2.0 L Turbo I4" },
-  "Mercedes S500": { "zeroToHundred": 4.9 },
-  "2026 Nissan Patrol": { "drive": "AWD" },
-  "Rolls Royce Cullinan": { "drive": "AWD" }
+  "Ferrari 296 GTS": {
+    "engine": "V6 Hybrid",
+    "fuel": "Petrol",
+    "drive": "RWD",
+    "seats": 2,
+    "doors": 2
+  },
+  "Ferrari 296 GTB": {
+    "engine": "V6 Hybrid"
+  },
+  "Ferrari 812 GTS": {
+    "drive": "RWD"
+  },
+  "McLaren Artura": {
+    "engine": "V6 Hybrid"
+  },
+  "McLaren Artura Gray": {
+    "engine": "V6 Hybrid",
+    "seats": 2,
+    "doors": 2
+  },
+  "Mclaren Artura Green": {
+    "engine": "V6 Hybrid",
+    "drive": "RWD",
+    "color": "Green"
+  },
+  "Mclaren Artura Orange": {
+    "engine": "V6 Hybrid"
+  },
+  "McLaren Artura Spider": {
+    "engine": "V6 Hybrid"
+  },
+  "Mclaren Artura Yellow": {
+    "engine": "V6 Hybrid"
+  },
+  "Lamborghini Urus Performante": {
+    "drive": "AWD"
+  },
+  "Landrover Defender V8": {
+    "engine": "V8"
+  },
+  "Brabus G800 Kit": {
+    "engine": "V8"
+  },
+  "BMW X4": {
+    "zeroToHundred": 6.4
+  },
+  "BMW 420i Convertible": {
+    "engine": "2.0 L Turbo I4"
+  },
+  "Mercedes C300 Convertible": {
+    "engine": "2.0 L Turbo I4"
+  },
+  "Mercedes E 300": {
+    "engine": "2.0 L Turbo I4",
+    "category": "Luxury"
+  },
+  "Mercedes E class": {
+    "engine": "2.0 L Turbo I4",
+    "zeroToHundred": null
+  },
+  "Mercedes GLC 200": {
+    "engine": "2.0 L Turbo I4"
+  },
+  "Mercedes GLC 200 Coupe": {
+    "engine": "2.0 L Turbo I4"
+  },
+  "Mercedes S500": {
+    "zeroToHundred": 4.9
+  },
+  "2026 Nissan Patrol": {
+    "drive": "AWD"
+  },
+  "Rolls Royce Cullinan": {
+    "drive": "AWD",
+    "category": "Luxury"
+  },
+  "RAM TRX 1500": {
+    "category": "SUV"
+  },
+  "Porsche Cayenne": {
+    "category": "SUV"
+  },
+  "G63 Brabus Kit": {
+    "category": "SUV"
+  },
+  "Mercedes G63 Brabus": {
+    "category": "SUV"
+  },
+  "Lamborghini Urus": {
+    "category": "Sports"
+  },
+  "Lamborghini Urus S": {
+    "category": "Sports"
+  },
+  "Jetour T2": {
+    "category": "SUV"
+  },
+  "BMW 318i": {
+    "category": "Economy"
+  }
 }

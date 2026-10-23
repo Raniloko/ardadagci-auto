@@ -145,6 +145,7 @@ button.adm-row:active, a.adm-row:active { background: var(--a-fill); }
 .adm-empty svg { width: 34px; height: 34px; color: var(--a-faint); }
 .adm-note { padding: 12px 14px; margin-bottom: 18px; border-radius: 14px; background: rgb(10 122 255 / .1); color: var(--a-text); font-size: 14px; }
 .adm-note.warn { background: rgb(242 154 14 / .14); }
+.adm-note .adm-code { margin: 10px 0; font: 600 26px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; user-select: all; }
 .adm-note.error { background: rgb(229 65 59 / .12); color: var(--a-red); }
 .adm-note strong { display: block; margin-bottom: 2px; }
 .adm-more { display: flex; justify-content: center; margin: 14px 0 0; }

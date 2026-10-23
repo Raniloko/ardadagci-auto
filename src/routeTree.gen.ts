@@ -18,6 +18,7 @@ import { Route as FleetRouteImport } from './routes/fleet'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as TiktokRouteImport } from './routes/tiktok'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
 import { Route as AdminEinstellungenRouteImport } from './routes/admin.einstellungen'
 import { Route as FleetSlugRouteImport } from './routes/fleet_.$slug'
 import { Route as AdminFahrzeugeIndexRouteImport } from './routes/admin.fahrzeuge.index'
@@ -70,6 +71,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEinstellungenRoute = AdminEinstellungenRouteImport.update({
   id: '/einstellungen',
   path: '/einstellungen',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/einstellungen': typeof AdminEinstellungenRoute
   '/fleet/$slug': typeof FleetSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/einstellungen': typeof AdminEinstellungenRoute
   '/fleet/$slug': typeof FleetSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/einstellungen': typeof AdminEinstellungenRoute
   '/fleet_/$slug': typeof FleetSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/reviews'
     | '/tiktok'
+    | '/admin/admins'
     | '/admin/einstellungen'
     | '/fleet/$slug'
     | '/admin/'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/reviews'
     | '/tiktok'
+    | '/admin/admins'
     | '/admin/einstellungen'
     | '/fleet/$slug'
     | '/admin'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/reviews'
     | '/tiktok'
+    | '/admin/admins'
     | '/admin/einstellungen'
     | '/fleet_/$slug'
     | '/admin/'
@@ -283,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/einstellungen': {
       id: '/admin/einstellungen'
       path: '/einstellungen'
@@ -329,6 +348,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAdminsRoute: typeof AdminAdminsRoute
   AdminEinstellungenRoute: typeof AdminEinstellungenRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminFahrzeugeSlugRoute: typeof AdminFahrzeugeSlugRoute
@@ -338,6 +358,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAdminsRoute: AdminAdminsRoute,
   AdminEinstellungenRoute: AdminEinstellungenRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminFahrzeugeSlugRoute: AdminFahrzeugeSlugRoute,

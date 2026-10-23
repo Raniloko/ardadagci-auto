@@ -189,7 +189,18 @@ export type Database = {
     Functions: {
       admin_setup_open: { Args: never; Returns: boolean }
       claim_admin: { Args: { setup_code: string }; Returns: boolean }
+      create_admin_invite: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
+      list_admin_invites: {
+        Args: never
+        Returns: { created_at: string; expires_at: string; id: string }[]
+      }
+      list_admins: {
+        Args: never
+        Returns: { created_at: string; email: string; is_me: boolean; user_id: string }[]
+      }
+      remove_admin: { Args: { target: string }; Returns: undefined }
+      revoke_admin_invite: { Args: { invite_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

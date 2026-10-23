@@ -14,13 +14,182 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_setup: {
+        Row: {
+          code_sha256: string
+          expires_at: string
+          id: number
+        }
+        Insert: {
+          code_sha256: string
+          expires_at: string
+          id?: number
+        }
+        Update: {
+          code_sha256?: string
+          expires_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
+      admin_users: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          admin_notes: string | null
+          car_label: string | null
+          car_slug: string | null
+          created_at: string
+          customer_name: string
+          customer_phone: string
+          end_date: string | null
+          id: string
+          language: string | null
+          location: string | null
+          notes: string | null
+          price_per_day_eur: number | null
+          source: string
+          start_date: string | null
+          status: string
+          total_eur: number | null
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          car_label?: string | null
+          car_slug?: string | null
+          created_at?: string
+          customer_name: string
+          customer_phone: string
+          end_date?: string | null
+          id?: string
+          language?: string | null
+          location?: string | null
+          notes?: string | null
+          price_per_day_eur?: number | null
+          source?: string
+          start_date?: string | null
+          status?: string
+          total_eur?: number | null
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          car_label?: string | null
+          car_slug?: string | null
+          created_at?: string
+          customer_name?: string
+          customer_phone?: string
+          end_date?: string | null
+          id?: string
+          language?: string | null
+          location?: string | null
+          notes?: string | null
+          price_per_day_eur?: number | null
+          source?: string
+          start_date?: string | null
+          status?: string
+          total_eur?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      car_overrides: {
+        Row: {
+          available: boolean
+          category: string | null
+          description_de: string | null
+          description_en: string | null
+          featured: boolean | null
+          hidden: boolean
+          mileage_limit_km: number | null
+          name: string | null
+          price_eur: number | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          available?: boolean
+          category?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          featured?: boolean | null
+          hidden?: boolean
+          mileage_limit_km?: number | null
+          name?: string | null
+          price_eur?: number | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          available?: boolean
+          category?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          featured?: boolean | null
+          hidden?: boolean
+          mileage_limit_km?: number | null
+          name?: string | null
+          price_eur?: number | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          aed_per_eur: number
+          email: string
+          id: number
+          markup_percent: number
+          phone_number: string
+          tiktok_url: string
+          updated_at: string
+          whatsapp_number: string
+        }
+        Insert: {
+          aed_per_eur?: number
+          email?: string
+          id?: number
+          markup_percent?: number
+          phone_number?: string
+          tiktok_url?: string
+          updated_at?: string
+          whatsapp_number?: string
+        }
+        Update: {
+          aed_per_eur?: number
+          email?: string
+          id?: number
+          markup_percent?: number
+          phone_number?: string
+          tiktok_url?: string
+          updated_at?: string
+          whatsapp_number?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_setup_open: { Args: never; Returns: boolean }
+      claim_admin: { Args: { setup_code: string }; Returns: boolean }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

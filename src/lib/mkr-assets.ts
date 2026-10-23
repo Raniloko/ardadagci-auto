@@ -1,18 +1,16 @@
 import heroImage from "@/assets/hero-black-lamborghini-dubai.jpg";
 import heroImageSmall from "@/assets/hero-black-lamborghini-dubai-960.jpg";
 
-// Visual assets supplied by Masterkey Rent A Car (MKR) via their CDN.
-const CDN = "https://cdn.mkrentacar.com/wp-content/uploads";
-
+// Visual assets supplied by Masterkey Rent A Car (MKR), downloaded and served from /public.
 export const mkrHero = { src: heroImage, small: heroImageSmall };
 
 export const categoryTiles = [
-  { id: "Luxury", de: "Luxus", en: "Luxury", image: `${CDN}/2026/01/luxury-2-1.webp` },
-  { id: "Sports", de: "Sportwagen", en: "Sports", image: `${CDN}/2026/01/sport.webp` },
-  { id: "SUV", de: "SUV", en: "SUV", image: `${CDN}/2026/01/suv-.webp` },
-  { id: "Exotic", de: "Exotisch", en: "Exotic", image: `${CDN}/2026/01/exotic-cars.webp` },
-  { id: "Convertible", de: "Cabrio", en: "Convertible", image: `${CDN}/2026/01/convertible-3.webp` },
-  { id: "Economy", de: "Economy", en: "Economy", image: `${CDN}/2026/01/economy-1.webp` },
+  { id: "Luxury", de: "Luxus", en: "Luxury", image: "/categories/luxury.webp" },
+  { id: "Sports", de: "Sportwagen", en: "Sports", image: "/categories/sports.webp" },
+  { id: "SUV", de: "SUV", en: "SUV", image: "/categories/suv.webp" },
+  { id: "Exotic", de: "Exotisch", en: "Exotic", image: "/categories/exotic.webp" },
+  { id: "Convertible", de: "Cabrio", en: "Convertible", image: "/categories/convertible.webp" },
+  { id: "Economy", de: "Economy", en: "Economy", image: "/categories/economy.webp" },
 ] as const;
 
 export type CategoryId = (typeof categoryTiles)[number]["id"];

@@ -83,7 +83,7 @@ export const faqGroups: { title: Bilingual; items: { q: Bilingual; a: Bilingual 
   },
 ];
 
-/** MKR delivery fees in AED (shown to customers converted to EUR). */
+/** MKR delivery fees in AED (passed on to customers unchanged). */
 export const deliveryFees: { label: Bilingual; aed: number }[] = [
   { label: { de: "Innerhalb Dubai – Lieferung + Abholung", en: "Within Dubai – delivery + pick-up" }, aed: 100 },
   { label: { de: "Innerhalb Dubai – nur Lieferung oder Abholung", en: "Within Dubai – delivery or pick-up only" }, aed: 50 },

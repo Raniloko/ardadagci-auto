@@ -4,16 +4,16 @@ import { useState, type FormEvent } from "react";
 import { CarCard } from "@/components/car-card";
 import { CarImage } from "@/components/car-image";
 import { Rail } from "@/components/car-rail";
+import { CurrencyToggle } from "@/components/currency-toggle";
 import { BrandMarquee, CategoryTiles } from "@/components/discovery-filters";
 import { FaqList } from "@/components/faq-list";
 import { SectionHeading } from "@/components/section-heading";
 import { useLanguage } from "@/lib/language";
 import { photoSrc } from "@/lib/images";
 import { mkrHero } from "@/lib/mkr-assets";
-import { formatEur } from "@/lib/pricing";
 import { brandStories, documents, faqGroups, features, locations, steps } from "@/lib/site-content";
 import { baseFleet, carTitle, reviews } from "@/lib/site-data";
-import { useSite } from "@/lib/use-site";
+import { useMoney, useSite } from "@/lib/use-site";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,6 +34,7 @@ const featureIcons = { shield: ShieldCheck, clock: Clock, car: CarIcon, sparkles
 function HomePage() {
   const { language, t } = useLanguage();
   const { fleet: { brands, cars, categories, featuredCars }, contact } = useSite();
+  const money = useMoney();
   const [faqGroup, setFaqGroup] = useState(0);
   return (
     <div className="home">
@@ -59,7 +60,7 @@ function HomePage() {
       {categories.map((category) => (
         <section key={category.id} className="site-shell section category-row">
           <SectionHeading
-            eyebrow={`${category.count} ${t("Fahrzeuge", "cars")} · ${t("ab", "from")} ${formatEur(category.fromPrice, language)}`}
+            eyebrow={`${category.count} ${t("Fahrzeuge", "cars")} · ${t("ab", "from")} ${money(category.fromPrice)}`}
             title={t(`${category.de} mieten in Dubai`, `Rent ${category.en.toLowerCase()} cars in Dubai`)}
             action={<Link to="/fleet" search={{ category: category.id }} className="text-link">{t("Alle ansehen", "View all")}<ArrowRight /></Link>}
           />
@@ -100,7 +101,7 @@ function HomePage() {
       </section>
 
       <section className="site-shell section">
-        <SectionHeading eyebrow={t("Preise", "Prices")} title={t("Tagespreise im Überblick", "Daily rates at a glance")} copy={t("Alle Preise pro Tag in Euro inklusive MwSt. – keine versteckten Gebühren bei der Übergabe.", "All prices per day in euros including VAT – no hidden fees at handover.")} />
+        <SectionHeading eyebrow={t("Preise", "Prices")} title={t("Tagespreise im Überblick", "Daily rates at a glance")} copy={t("Alle Preise pro Tag in Dirham (AED) inklusive MwSt. – auf Euro umschaltbar. Keine versteckten Gebühren bei der Übergabe.", "All prices per day in dirham (AED) including VAT – switchable to euros. No hidden fees at handover.")} action={<CurrencyToggle />} />
         <div className="price-columns">
           {(["Sports", "Luxury", "SUV"] as const).map((id) => {
             const category = categories.find((c) => c.id === id)!;
@@ -109,7 +110,7 @@ function HomePage() {
                 <h3>{category[language]}</h3>
                 <ul>
                   {cars.filter((c, i, all) => c.category === id && all.findIndex((o) => carTitle(o) === carTitle(c)) === i).slice(0, 5).map((car) => (
-                    <li key={car.slug}><Link to="/fleet/$slug" params={{ slug: car.slug }}><span>{carTitle(car)}</span><strong>{formatEur(car.price, language)}<small>/{t("Tag", "day")}</small></strong></Link></li>
+                    <li key={car.slug}><Link to="/fleet/$slug" params={{ slug: car.slug }}><span>{carTitle(car)}</span><strong>{money(car.price)}<small>/{t("Tag", "day")}</small></strong></Link></li>
                   ))}
                 </ul>
                 <Link to="/fleet" search={{ category: id }} className="text-link">{t("Alle Preise", "All prices")}<ArrowRight /></Link>
@@ -188,6 +189,7 @@ function HomePage() {
 function Hero() {
   const { language, t } = useLanguage();
   const { brands, categories, fleetStats } = useSite().fleet;
+  const money = useMoney();
   const navigate = useNavigate();
   const [category, setCategory] = useState("");
   const [brand, setBrand] = useState("");
@@ -221,10 +223,10 @@ function Hero() {
           <button type="submit" className="btn btn-light"><Search />{t("Fahrzeuge finden", "Find cars")}</button>
         </form>
         <ul className="hero-trust">
-          <li><ShieldCheck />{t("0 € Kaution", "No deposit")}</li>
+          <li><ShieldCheck />{t("Keine Kaution", "No deposit")}</li>
           <li><Truck />{t("Lieferung in ganz Dubai", "Delivery across Dubai")}</li>
           <li><Clock />{t("24/7 erreichbar", "Available 24/7")}</li>
-          <li><CarIcon />{fleetStats.cars} {t("Fahrzeuge", "cars")} · {t("ab", "from")} {formatEur(fleetStats.fromPrice, language)}</li>
+          <li><CarIcon />{fleetStats.cars} {t("Fahrzeuge", "cars")} · {t("ab", "from")} {money(fleetStats.fromPrice)}</li>
         </ul>
       </div>
     </section>

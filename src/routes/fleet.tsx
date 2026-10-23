@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CarCard } from "@/components/car-card";
+import { CurrencyToggle } from "@/components/currency-toggle";
 import { useLanguage } from "@/lib/language";
 import { baseFleet, carTitle } from "@/lib/site-data";
 import { useSite } from "@/lib/use-site";
@@ -105,6 +106,7 @@ function FleetPage() {
         <div className="results-meta">
           <span>{shown.length} {t("Fahrzeuge", "cars")}</span>
           {hasFilters && <button type="button" className="text-link" onClick={() => { setQuery(""); navigate({ search: {}, replace: true }); }}>{t("Filter zurücksetzen", "Reset filters")}<X /></button>}
+          <CurrencyToggle className="toolbar-currency" />
         </div>
         {shown.length ? (
           <div className="fleet-grid">{shown.slice(0, limit).map((car, i) => <CarCard key={car.slug} car={car} eager={i < 4} />)}</div>

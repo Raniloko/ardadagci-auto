@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-import { DEFAULT_PRICING } from "./pricing";
+import { DEFAULT_MARKUP_TIERS, DEFAULT_PRICING, type MarkupTier } from "./pricing";
 
 /** Everything the admin dashboard can change on the public site. */
 export type SiteSettings = {
-  markupPercent: number;
+  markupTiers: MarkupTier[];
   aedPerEur: number;
   whatsappNumber: string;
   phoneNumber: string;
@@ -17,7 +17,8 @@ export type CarOverride = {
   hidden: boolean;
   available: boolean;
   featured: boolean | null;
-  priceEur: number | null;
+  /** Fixed customer price per day in AED. */
+  priceAed: number | null;
   name: string | null;
   category: string | null;
   mileageLimitKm: number | null;
@@ -37,8 +38,17 @@ export const DEFAULT_SETTINGS: SiteSettings = {
 
 export const DEFAULT_CONFIG: SiteConfig = { settings: DEFAULT_SETTINGS, overrides: {} };
 
+/** Validates the stored markup tiers; anything unusable falls back to the defaults. */
+function parseTiers(value: unknown): MarkupTier[] {
+  if (!Array.isArray(value)) return DEFAULT_MARKUP_TIERS;
+  const tiers = value
+    .map((tier) => ({ fromAed: Number(tier?.fromAed), addAed: Number(tier?.addAed) }))
+    .filter((tier) => Number.isFinite(tier.fromAed) && Number.isFinite(tier.addAed) && tier.fromAed >= 0 && tier.addAed >= 0);
+  return tiers.length ? tiers.sort((a, b) => a.fromAed - b.fromAed) : DEFAULT_MARKUP_TIERS;
+}
+
 export const settingsFromRow = (row: Tables<"site_settings">): SiteSettings => ({
-  markupPercent: Number(row.markup_percent),
+  markupTiers: parseTiers(row.markup_tiers),
   aedPerEur: Number(row.aed_per_eur),
   whatsappNumber: row.whatsapp_number,
   phoneNumber: row.phone_number,
@@ -50,7 +60,7 @@ export const overrideFromRow = (row: Tables<"car_overrides">): CarOverride => ({
   hidden: row.hidden,
   available: row.available,
   featured: row.featured,
-  priceEur: row.price_eur,
+  priceAed: row.price_aed,
   name: row.name,
   category: row.category,
   mileageLimitKm: row.mileage_limit_km,

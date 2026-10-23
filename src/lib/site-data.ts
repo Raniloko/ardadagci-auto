@@ -1,16 +1,16 @@
 import fleet from "./mkr-fleet.json";
 import { brandTiles, categoryTiles, type CategoryId } from "./mkr-assets";
 import type { Photo } from "./images";
-import { customerPriceEur, feeEur, type PricingSettings } from "./pricing";
+import { customerPriceAed, type PricingSettings } from "./pricing";
 import { DEFAULT_CONFIG, type SiteConfig, type SiteSettings } from "./site-config";
 
 type FleetRecord = (typeof fleet)[number];
 
-export type Car = Omit<FleetRecord, "category" | "extraKmAed" | "source" | "images"> & {
+export type Car = Omit<FleetRecord, "category" | "source" | "images"> & {
   category: CategoryId;
   /** MKR model name before any admin override. */
   originalName: string;
-  /** Customer daily price in EUR (admin override, or MKR price + markup). */
+  /** Customer daily price in AED (admin override, or MKR price + markup). */
   price: number;
   /** Price from the formula, ignoring a manual override. */
   formulaPrice: number;
@@ -20,7 +20,6 @@ export type Car = Omit<FleetRecord, "category" | "extraKmAed" | "source" | "imag
   image: string;
   /** Gallery with resized variants for responsive loading. */
   photos: Photo[];
-  extraKmEur: number | null;
   featured: boolean;
   /** Removed from the website by the admin. */
   hidden: boolean;
@@ -45,22 +44,21 @@ export const baseFleet = fleet;
 function buildCars(config: SiteConfig): Car[] {
   const pricing: PricingSettings = config.settings;
   return fleet
-    .map(({ extraKmAed, source: _source, ...car }) => {
+    .map(({ source: _source, ...car }) => {
       const override = config.overrides[car.slug];
-      const formulaPrice = customerPriceEur(car.baseDailyAed, pricing);
+      const formulaPrice = customerPriceAed(car.baseDailyAed, pricing);
       return {
         ...car,
         originalName: car.name,
         name: override?.name || car.name,
         category: (override?.category && CATEGORY_IDS.includes(override.category) ? override.category : car.category) as CategoryId,
         mileageLimitKm: override?.mileageLimitKm ?? car.mileageLimitKm,
-        price: override?.priceEur ?? formulaPrice,
+        price: override?.priceAed ?? formulaPrice,
         formulaPrice,
-        priceOverridden: Boolean(override?.priceEur),
+        priceOverridden: Boolean(override?.priceAed),
         images: car.images.map((photo) => photo.src),
         image: car.images[0]?.src ?? "",
         photos: car.images,
-        extraKmEur: extraKmAed ? feeEur(extraKmAed, pricing) : null,
         featured: override?.featured ?? DEFAULT_FEATURED.includes(car.slug),
         hidden: override?.hidden ?? false,
         available: override?.available ?? true,

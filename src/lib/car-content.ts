@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { customerPriceEur, feeEur, formatEur, type PricingSettings } from "./pricing";
+import { customerPriceAed, type PricingSettings } from "./pricing";
 import { fetchSiteConfig } from "./site-config";
 import { buildFleet, type Car } from "./site-data";
 
@@ -7,13 +7,14 @@ export type DescriptionBlock = { t: "h" | "p" | "li"; x: string };
 /** `de`: German description; `blocks`/`faqs`: the car's own MKR text (English). Admin texts replace both. */
 export type CarContent = { de: string[]; blocks: DescriptionBlock[]; faqs: { q: string; a: string }[] };
 
-/** Convert MKR `{{aed:N}}` price tokens into ARDADAGCI customer prices `{{eur:N}}`. */
+/** Convert MKR `{{aed:N}}` price tokens into ARDADAGCI customer prices `{{price:N}}` (AED). */
 function toCustomerPrices(text: string, car: Car, pricing: PricingSettings) {
   return text.replace(/\{\{aed:(\d+)\}\}/g, (_, raw: string) => {
     const aed = Number(raw);
-    if (aed < 99) return `{{eur:${feeEur(aed, pricing)}}}`;
+    // Small amounts are pass-through fees (extra km, tolls) and keep MKR's price.
+    if (aed < 99) return `{{price:${aed}}}`;
     const ratio = aed / car.baseDailyAed;
-    return `{{eur:${ratio >= 0.5 && ratio <= 2 ? car.price : customerPriceEur(aed, pricing)}}}`;
+    return `{{price:${ratio >= 0.5 && ratio <= 2 ? car.price : customerPriceAed(aed, pricing)}}}`;
   });
 }
 
@@ -38,5 +39,5 @@ export const getCarContent = createServerFn({ method: "GET" })
     };
   });
 
-/** Format `{{eur:N}}` price tokens for the active language. */
-export const renderPrices = (text: string, language: "de" | "en") => text.replace(/\{\{eur:(\d+)\}\}/g, (_, raw: string) => formatEur(Number(raw), language));
+/** Format `{{price:N}}` AED tokens with the visitor's currency formatter (see `useMoney`). */
+export const renderPrices = (text: string, money: (aed: number) => string) => text.replace(/\{\{price:(\d+)\}\}/g, (_, raw: string) => money(Number(raw)));

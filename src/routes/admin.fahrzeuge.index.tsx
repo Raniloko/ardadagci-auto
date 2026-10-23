@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Empty, LargeTitle, Pill, Segmented, Switch, TopBar, useToast } from "@/components/admin/ui";
 import { errorMessage, useAdminFleet, useSaveOverride } from "@/lib/admin-data";
 import { photoSrc } from "@/lib/images";
-import { formatEur } from "@/lib/pricing";
+import { formatAed } from "@/lib/pricing";
 import { carTitle, colorLabel, type Car } from "@/lib/site-data";
 
 type Filter = "alle" | "online" | "vermietet" | "ausgeblendet" | "highlights";
@@ -83,7 +83,7 @@ function CarRow({ car }: { car: Car }) {
         <img className={`adm-thumb ${car.hidden ? "is-dim" : ""}`} src={car.photos[0] ? photoSrc(car.photos[0]) : ""} alt="" loading="lazy" />
         <div className="adm-row-main">
           <strong>{carTitle(car)}</strong>
-          <span>{colorLabel(car.color, "de")} · {formatEur(car.price)}{car.priceOverridden ? " (fix)" : ""}</span>
+          <span>{colorLabel(car.color, "de")} · {formatAed(car.price)}{car.priceOverridden ? " (fix)" : ""}</span>
           <span style={{ display: "flex", gap: 4, marginTop: 3 }}>
             {car.hidden ? <Pill>Ausgeblendet</Pill> : <Pill tone="green">Online</Pill>}
             {!car.available && <Pill tone="orange">Vermietet</Pill>}

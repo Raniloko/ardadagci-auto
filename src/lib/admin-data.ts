@@ -137,7 +137,7 @@ export function useSaveSettings() {
       const { error } = await supabase
         .from("site_settings")
         .update({
-          markup_percent: settings.markupPercent,
+          markup_tiers: settings.markupTiers,
           aed_per_eur: settings.aedPerEur,
           whatsapp_number: settings.whatsappNumber,
           phone_number: settings.phoneNumber,

@@ -6,7 +6,7 @@ import germanDescriptions from "@/lib/car-descriptions-de.json";
 import { errorMessage, useAdminFleet, useResetOverride, useSaveOverride, type OverridePatch } from "@/lib/admin-data";
 import { photoSrc } from "@/lib/images";
 import { categoryTiles } from "@/lib/mkr-assets";
-import { aedToEur, formatEur } from "@/lib/pricing";
+import { formatAed, formatMoney, markupAed } from "@/lib/pricing";
 import { baseFleet, carTitle, colorLabel, DEFAULT_FEATURED } from "@/lib/site-data";
 
 export const Route = createFileRoute("/admin/fahrzeuge/$slug")({ component: CarEditor });
@@ -39,8 +39,8 @@ function CarEditor() {
     visible: !car.hidden,
     available: car.available,
     featured: car.featured,
-    priceMode: override?.priceEur ? "fixed" : "auto",
-    price: String(override?.priceEur ?? car.formulaPrice),
+    priceMode: override?.priceAed ? "fixed" : "auto",
+    price: String(override?.priceAed ?? car.formulaPrice),
     name: car.name,
     category: car.category,
     km: String(car.mileageLimitKm ?? ""),
@@ -56,7 +56,8 @@ function CarEditor() {
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => setDraft({ ...draft, [key]: value });
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
-  const mkrEur = Math.round(aedToEur(car.baseDailyAed, settings));
+  const mkr = base.baseDailyAed;
+  const eur = (aed: number) => formatMoney(aed, "EUR", "de", settings.aedPerEur);
   const customerPrice = draft.priceMode === "fixed" ? Number(draft.price) || 0 : car.formulaPrice;
   const priceInvalid = draft.priceMode === "fixed" && !(Number(draft.price) >= 1);
 
@@ -68,7 +69,7 @@ function CarEditor() {
       hidden: !draft.visible,
       available: draft.available,
       featured: draft.featured === DEFAULT_FEATURED.includes(base.slug) ? null : draft.featured,
-      price_eur: draft.priceMode === "fixed" ? Math.round(Number(draft.price)) : null,
+      price_aed: draft.priceMode === "fixed" ? Math.round(Number(draft.price)) : null,
       name: draft.name.trim() && draft.name.trim() !== base.name ? draft.name.trim() : null,
       category: draft.category !== base.category ? draft.category : null,
       mileage_limit_km: km !== null && Number.isFinite(km) && km !== base.mileageLimitKm ? km : null,
@@ -106,19 +107,20 @@ function CarEditor() {
         <SwitchRow title="Highlight auf der Startseite" sub="Erscheint bei „Die begehrtesten Fahrzeuge“" checked={draft.featured} onChange={(v) => set("featured", v)} />
       </Section>
 
-      <Section title="Preis pro Tag" foot={`MKR-Preis: ${base.baseDailyAed.toLocaleString("de-DE")} AED ≈ ${formatEur(mkrEur)} · Automatisch = MKR-Preis + ${String(settings.markupPercent).replace(".", ",")} % Aufschlag`}>
+      <Section title="Preis pro Tag" foot={`Automatisch = MKR-Preis ${formatAed(mkr)} + ${formatAed(markupAed(mkr, settings.markupTiers))} Aufschlag (Preisklassen unter Einstellungen). Kunden können auf der Website auf Euro umschalten: ${eur(customerPrice)}.`}>
         <div style={{ padding: "12px 16px 0" }}>
-          <Segmented value={draft.priceMode} onChange={(v) => set("priceMode", v)} options={[{ id: "auto", label: `Automatisch (${formatEur(car.formulaPrice)})` }, { id: "fixed", label: "Fester Preis" }]} />
+          <Segmented value={draft.priceMode} onChange={(v) => set("priceMode", v)} options={[{ id: "auto", label: `Automatisch (${formatAed(car.formulaPrice)})` }, { id: "fixed", label: "Fester Preis" }]} />
         </div>
         {draft.priceMode === "fixed" && (
           <Field label="Kundenpreis pro Tag">
-            <span className="adm-field-inline"><input inputMode="numeric" value={draft.price} onChange={(e) => set("price", e.target.value.replace(/[^\d]/g, ""))} aria-invalid={priceInvalid} /><em>€</em></span>
+            <span className="adm-field-inline"><input inputMode="numeric" value={draft.price} onChange={(e) => set("price", e.target.value.replace(/[^\d]/g, ""))} aria-invalid={priceInvalid} /><em>AED</em></span>
           </Field>
         )}
         <dl className="adm-kv">
-          <dt>Kunde zahlt</dt><dd>{formatEur(customerPrice)}</dd>
-          <dt>An MKR</dt><dd>− {formatEur(mkrEur)}</dd>
-          <dt className="total">Deine Provision</dt><dd className="total" style={{ color: customerPrice - mkrEur > 0 ? "var(--a-green)" : "var(--a-red)" }}>{formatEur(customerPrice - mkrEur)}</dd>
+          <dt>Kunde zahlt</dt><dd>{formatAed(customerPrice)}</dd>
+          <dt>An MKR</dt><dd>− {formatAed(mkr)}</dd>
+          <dt className="total">Deine Provision pro Tag</dt><dd className="total" style={{ color: customerPrice - mkr > 0 ? "var(--a-green)" : "var(--a-red)" }}>{formatAed(customerPrice - mkr)}</dd>
+          <dt>In Euro (ca.)</dt><dd>{eur(customerPrice - mkr)}</dd>
         </dl>
       </Section>
 

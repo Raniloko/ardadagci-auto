@@ -60,11 +60,11 @@ export type Database = {
           language: string | null
           location: string | null
           notes: string | null
-          price_per_day_eur: number | null
+          price_per_day_aed: number | null
           source: string
           start_date: string | null
           status: string
-          total_eur: number | null
+          total_aed: number | null
           updated_at: string
         }
         Insert: {
@@ -79,11 +79,11 @@ export type Database = {
           language?: string | null
           location?: string | null
           notes?: string | null
-          price_per_day_eur?: number | null
+          price_per_day_aed?: number | null
           source?: string
           start_date?: string | null
           status?: string
-          total_eur?: number | null
+          total_aed?: number | null
           updated_at?: string
         }
         Update: {
@@ -98,11 +98,11 @@ export type Database = {
           language?: string | null
           location?: string | null
           notes?: string | null
-          price_per_day_eur?: number | null
+          price_per_day_aed?: number | null
           source?: string
           start_date?: string | null
           status?: string
-          total_eur?: number | null
+          total_aed?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -117,7 +117,7 @@ export type Database = {
           hidden: boolean
           mileage_limit_km: number | null
           name: string | null
-          price_eur: number | null
+          price_aed: number | null
           slug: string
           updated_at: string
         }
@@ -130,7 +130,7 @@ export type Database = {
           hidden?: boolean
           mileage_limit_km?: number | null
           name?: string | null
-          price_eur?: number | null
+          price_aed?: number | null
           slug: string
           updated_at?: string
         }
@@ -143,7 +143,7 @@ export type Database = {
           hidden?: boolean
           mileage_limit_km?: number | null
           name?: string | null
-          price_eur?: number | null
+          price_aed?: number | null
           slug?: string
           updated_at?: string
         }
@@ -154,7 +154,7 @@ export type Database = {
           aed_per_eur: number
           email: string
           id: number
-          markup_percent: number
+          markup_tiers: Json
           phone_number: string
           tiktok_url: string
           updated_at: string
@@ -164,7 +164,7 @@ export type Database = {
           aed_per_eur?: number
           email?: string
           id?: number
-          markup_percent?: number
+          markup_tiers?: Json
           phone_number?: string
           tiktok_url?: string
           updated_at?: string
@@ -174,7 +174,7 @@ export type Database = {
           aed_per_eur?: number
           email?: string
           id?: number
-          markup_percent?: number
+          markup_tiers?: Json
           phone_number?: string
           tiktok_url?: string
           updated_at?: string

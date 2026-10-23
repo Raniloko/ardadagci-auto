@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { CarCard } from "@/components/car-card";
 import { CarImage } from "@/components/car-image";
 import { Rail } from "@/components/car-rail";
-import { BrandRail, CategoryTiles } from "@/components/discovery-filters";
+import { BrandMarquee, CategoryTiles } from "@/components/discovery-filters";
 import { FaqList } from "@/components/faq-list";
 import { SectionHeading } from "@/components/section-heading";
 import { useLanguage } from "@/lib/language";
@@ -39,7 +39,7 @@ function HomePage() {
 
       <section className="site-shell section brand-section" aria-label={t("Marken", "Brands")}>
         <SectionHeading eyebrow={t(`${brands.length} Marken`, `${brands.length} brands`)} title={t("Nach Marke entdecken", "Browse by brand")} />
-        <BrandRail />
+        <BrandMarquee />
       </section>
 
       <section className="site-shell section">

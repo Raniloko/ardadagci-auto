@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import founderImage from "@/assets/founder-arda.jpg";
+import aboutImage from "@/assets/hero-lamborghini-dubai.jpg";
 import { PageIntro } from "@/components/page-intro";
 import { useLanguage } from "@/lib/language";
 import { useSite } from "@/lib/use-site";
@@ -27,7 +27,7 @@ function Page() {
     <>
       <PageIntro eyebrow={t("Unsere Geschichte", "Our story")} title={t("Gebaut auf Vertrauen.", "Built around trust.")} copy={t("Eine Boutique-Vermietung in Dubai, bei der jeder Kunde direkt mit Menschen spricht, die die Autos kennen.", "A boutique Dubai rental where every client speaks directly with people who know the cars.")} />
       <section className="site-shell section about-layout">
-        <img src={founderImage} alt={t("Arda, Gründer von ARDADAGCI", "Arda, founder of ARDADAGCI")} width={1008} height={1312} />
+        <img src={aboutImage} alt={t("Lamborghini Revuelto vor der Skyline von Dubai", "Lamborghini Revuelto in front of the Dubai skyline")} width={1920} height={1200} />
         <div>
           <p className="about-quote">{t("„Wahrer Luxus ist das Wissen, dass alles erledigt ist, bevor Sie ankommen.“", "“The real luxury is knowing everything has been handled before you arrive.”")}</p>
           <div className="about-text">

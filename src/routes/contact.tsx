@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { PageIntro } from "@/components/page-intro";
 import { useLanguage } from "@/lib/language";
-import { EMAIL, PHONE_NUMBER, whatsappUrl } from "@/lib/site-data";
+import { EMAIL, PHONE_DISPLAY, PHONE_NUMBER, whatsappUrl } from "@/lib/site-data";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -22,7 +22,7 @@ function Page() {
   const { t } = useLanguage();
   const channels = [
     { icon: MessageCircle, title: "WhatsApp", text: t("Schnellste Antwort, 24 Stunden", "Fastest response, 24 hours"), href: whatsappUrl() },
-    { icon: Phone, title: t("Telefon", "Phone"), text: PHONE_NUMBER, href: `tel:${PHONE_NUMBER}` },
+    { icon: Phone, title: t("Telefon", "Phone"), text: PHONE_DISPLAY, href: `tel:${PHONE_NUMBER}` },
     { icon: Mail, title: "E-Mail", text: EMAIL, href: `mailto:${EMAIL}` },
     { icon: MapPin, title: "Dubai", text: t("Lieferung in alle Emirate", "Delivery across the UAE") },
   ];

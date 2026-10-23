@@ -12,4 +12,5 @@
 - [x] Commission pricing: MKR price + ARDADAGCI markup, shown in EUR (`src/lib/pricing.ts`)
 - [x] Complete UI redesign: cinematic hero, brand/category discovery, category rails, filters with URL state, detail gallery, booking estimate
 - [x] WhatsApp number set (+49 172 6023003)
-- [ ] Confirm phone number, e-mail and social links in `src/lib/site-data.ts`
+- [x] Phone +49 172 6023003, TikTok @ardaadagcii, Instagram removed
+- [ ] Confirm e-mail address in `src/lib/site-data.ts`

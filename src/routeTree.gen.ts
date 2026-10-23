@@ -11,12 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BookingRouteImport } from './routes/booking'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FleetRouteImport } from './routes/fleet'
 import { Route as ReviewsRouteImport } from './routes/reviews'
 import { Route as TiktokRouteImport } from './routes/tiktok'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminEinstellungenRouteImport } from './routes/admin.einstellungen'
 import { Route as FleetSlugRouteImport } from './routes/fleet_.$slug'
+import { Route as AdminFahrzeugeIndexRouteImport } from './routes/admin.fahrzeuge.index'
+import { Route as AdminFahrzeugeSlugRouteImport } from './routes/admin.fahrzeuge.$slug'
+import { Route as AdminReservierungenIndexRouteImport } from './routes/admin.reservierungen.index'
+import { Route as AdminReservierungenIdRouteImport } from './routes/admin.reservierungen.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookingRoute = BookingRouteImport.update({
@@ -53,21 +65,59 @@ const TiktokRoute = TiktokRouteImport.update({
   path: '/tiktok',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEinstellungenRoute = AdminEinstellungenRouteImport.update({
+  id: '/einstellungen',
+  path: '/einstellungen',
+  getParentRoute: () => AdminRoute,
+} as any)
 const FleetSlugRoute = FleetSlugRouteImport.update({
   id: '/fleet_/$slug',
   path: '/fleet/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFahrzeugeIndexRoute = AdminFahrzeugeIndexRouteImport.update({
+  id: '/fahrzeuge/',
+  path: '/fahrzeuge/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFahrzeugeSlugRoute = AdminFahrzeugeSlugRouteImport.update({
+  id: '/fahrzeuge/$slug',
+  path: '/fahrzeuge/$slug',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReservierungenIndexRoute =
+  AdminReservierungenIndexRouteImport.update({
+    id: '/reservierungen/',
+    path: '/reservierungen/',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminReservierungenIdRoute = AdminReservierungenIdRouteImport.update({
+  id: '/reservierungen/$id',
+  path: '/reservierungen/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
   '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
+  '/admin/einstellungen': typeof AdminEinstellungenRoute
   '/fleet/$slug': typeof FleetSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/fahrzeuge/$slug': typeof AdminFahrzeugeSlugRoute
+  '/admin/reservierungen/$id': typeof AdminReservierungenIdRoute
+  '/admin/fahrzeuge/': typeof AdminFahrzeugeIndexRoute
+  '/admin/reservierungen/': typeof AdminReservierungenIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,30 +127,50 @@ export interface FileRoutesByTo {
   '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
+  '/admin/einstellungen': typeof AdminEinstellungenRoute
   '/fleet/$slug': typeof FleetSlugRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/fahrzeuge/$slug': typeof AdminFahrzeugeSlugRoute
+  '/admin/reservierungen/$id': typeof AdminReservierungenIdRoute
+  '/admin/fahrzeuge': typeof AdminFahrzeugeIndexRoute
+  '/admin/reservierungen': typeof AdminReservierungenIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
   '/fleet': typeof FleetRoute
   '/reviews': typeof ReviewsRoute
   '/tiktok': typeof TiktokRoute
+  '/admin/einstellungen': typeof AdminEinstellungenRoute
   '/fleet_/$slug': typeof FleetSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/fahrzeuge/$slug': typeof AdminFahrzeugeSlugRoute
+  '/admin/reservierungen/$id': typeof AdminReservierungenIdRoute
+  '/admin/fahrzeuge/': typeof AdminFahrzeugeIndexRoute
+  '/admin/reservierungen/': typeof AdminReservierungenIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/booking'
     | '/contact'
     | '/fleet'
     | '/reviews'
     | '/tiktok'
+    | '/admin/einstellungen'
     | '/fleet/$slug'
+    | '/admin/'
+    | '/admin/fahrzeuge/$slug'
+    | '/admin/reservierungen/$id'
+    | '/admin/fahrzeuge/'
+    | '/admin/reservierungen/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -110,22 +180,36 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/reviews'
     | '/tiktok'
+    | '/admin/einstellungen'
     | '/fleet/$slug'
+    | '/admin'
+    | '/admin/fahrzeuge/$slug'
+    | '/admin/reservierungen/$id'
+    | '/admin/fahrzeuge'
+    | '/admin/reservierungen'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/booking'
     | '/contact'
     | '/fleet'
     | '/reviews'
     | '/tiktok'
+    | '/admin/einstellungen'
     | '/fleet_/$slug'
+    | '/admin/'
+    | '/admin/fahrzeuge/$slug'
+    | '/admin/reservierungen/$id'
+    | '/admin/fahrzeuge/'
+    | '/admin/reservierungen/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   BookingRoute: typeof BookingRoute
   ContactRoute: typeof ContactRoute
   FleetRoute: typeof FleetRoute
@@ -148,6 +232,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/booking': {
@@ -185,6 +276,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TiktokRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/einstellungen': {
+      id: '/admin/einstellungen'
+      path: '/einstellungen'
+      fullPath: '/admin/einstellungen'
+      preLoaderRoute: typeof AdminEinstellungenRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/fleet_/$slug': {
       id: '/fleet_/$slug'
       path: '/fleet/$slug'
@@ -192,12 +297,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FleetSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/fahrzeuge/': {
+      id: '/admin/fahrzeuge/'
+      path: '/fahrzeuge'
+      fullPath: '/admin/fahrzeuge/'
+      preLoaderRoute: typeof AdminFahrzeugeIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/fahrzeuge/$slug': {
+      id: '/admin/fahrzeuge/$slug'
+      path: '/fahrzeuge/$slug'
+      fullPath: '/admin/fahrzeuge/$slug'
+      preLoaderRoute: typeof AdminFahrzeugeSlugRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reservierungen/': {
+      id: '/admin/reservierungen/'
+      path: '/reservierungen'
+      fullPath: '/admin/reservierungen/'
+      preLoaderRoute: typeof AdminReservierungenIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reservierungen/$id': {
+      id: '/admin/reservierungen/$id'
+      path: '/reservierungen/$id'
+      fullPath: '/admin/reservierungen/$id'
+      preLoaderRoute: typeof AdminReservierungenIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminEinstellungenRoute: typeof AdminEinstellungenRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminFahrzeugeSlugRoute: typeof AdminFahrzeugeSlugRoute
+  AdminReservierungenIdRoute: typeof AdminReservierungenIdRoute
+  AdminFahrzeugeIndexRoute: typeof AdminFahrzeugeIndexRoute
+  AdminReservierungenIndexRoute: typeof AdminReservierungenIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminEinstellungenRoute: AdminEinstellungenRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminFahrzeugeSlugRoute: AdminFahrzeugeSlugRoute,
+  AdminReservierungenIdRoute: AdminReservierungenIdRoute,
+  AdminFahrzeugeIndexRoute: AdminFahrzeugeIndexRoute,
+  AdminReservierungenIndexRoute: AdminReservierungenIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   BookingRoute: BookingRoute,
   ContactRoute: ContactRoute,
   FleetRoute: FleetRoute,

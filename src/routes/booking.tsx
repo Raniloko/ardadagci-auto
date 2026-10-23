@@ -4,7 +4,9 @@ import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { CarImage } from "@/components/car-image";
 import { useLanguage } from "@/lib/language";
 import { formatEur } from "@/lib/pricing";
-import { brands, carTitle, cars, colorLabel, findCar, whatsappUrl } from "@/lib/site-data";
+import { saveBookingRequest } from "@/lib/bookings";
+import { carTitle, colorLabel } from "@/lib/site-data";
+import { useSite } from "@/lib/use-site";
 
 export const Route = createFileRoute("/booking")({
   validateSearch: (s: Record<string, unknown>) => ({ car: typeof s["car"] === "string" ? s["car"] : "" }),
@@ -26,6 +28,7 @@ const DAY = 86_400_000;
 function BookingPage() {
   const { language, t } = useLanguage();
   const search = Route.useSearch();
+  const { fleet: { brands, cars, findCar }, contact } = useSite();
   const [slug, setSlug] = useState(search.car);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
@@ -33,7 +36,7 @@ function BookingPage() {
   const car = findCar(slug);
   const days = start && end ? Math.max(1, Math.round((Date.parse(end) - Date.parse(start)) / DAY)) : 0;
   const today = new Date().toISOString().slice(0, 10);
-  const grouped = useMemo(() => brands.map((b) => ({ brand: b.id, cars: cars.filter((c) => c.brand === b.id) })), []);
+  const grouped = useMemo(() => brands.map((b) => ({ brand: b.id, cars: cars.filter((c) => c.brand === b.id) })), [brands, cars]);
 
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -49,9 +52,25 @@ function BookingPage() {
       `${t("Telefon", "Phone")}: ${d.get("phone")}`,
       `${t("Nachricht", "Notes")}: ${d.get("notes") || "-"}`,
     ];
-    const link = whatsappUrl(lines.join("\n"));
+    const link = contact.whatsappUrl(lines.join("\n"));
     setUrl(link);
     window.open(link, "_blank", "noopener");
+    // Bots fill the hidden "website" field – only real requests go to the admin dashboard.
+    if (!d.get("website")) {
+      void saveBookingRequest({
+        car_slug: car?.slug ?? null,
+        car_label: car ? `${carTitle(car)}${car.color ? ` (${car.color})` : ""}` : null,
+        start_date: start || null,
+        end_date: end || null,
+        customer_name: String(d.get("name") ?? ""),
+        customer_phone: String(d.get("phone") ?? ""),
+        location: String(d.get("location") ?? ""),
+        notes: String(d.get("notes") ?? ""),
+        price_per_day_eur: car?.price ?? null,
+        total_eur: car && days ? car.price * days : null,
+        language,
+      });
+    }
   }
 
   return (
@@ -73,6 +92,7 @@ function BookingPage() {
         )}
       </div>
       <form onSubmit={submit} className="booking-form">
+        <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hp-field" />
         <div className="form-grid">
           <Field label={t("Fahrzeug", "Car")} wide>
             <select name="car" value={slug} onChange={(e) => setSlug(e.target.value)} className="form-control">

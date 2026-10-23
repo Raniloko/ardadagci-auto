@@ -12,13 +12,14 @@ import { photoSrc } from "@/lib/images";
 import { mkrHero } from "@/lib/mkr-assets";
 import { formatEur } from "@/lib/pricing";
 import { brandStories, documents, faqGroups, features, locations, steps } from "@/lib/site-content";
-import { brands, carTitle, cars, categories, featuredCars, fleetStats, reviews, whatsappUrl } from "@/lib/site-data";
+import { baseFleet, carTitle, reviews } from "@/lib/site-data";
+import { useSite } from "@/lib/use-site";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "ARDADAGCI — Luxusauto mieten in Dubai ohne Kaution" },
-      { name: "description", content: `Über ${fleetStats.cars} Luxus-, Sport- und SUV-Mietwagen in Dubai ohne Kaution. Lamborghini, Ferrari, Rolls-Royce & mehr – mit Lieferung und Buchung per WhatsApp.` },
+      { name: "description", content: `Über ${baseFleet.length} Luxus-, Sport- und SUV-Mietwagen in Dubai ohne Kaution. Lamborghini, Ferrari, Rolls-Royce & mehr – mit Lieferung und Buchung per WhatsApp.` },
       { property: "og:title", content: "ARDADAGCI — Luxusauto mieten in Dubai" },
       { property: "og:description", content: "Lamborghini, Ferrari, Rolls-Royce und mehr in Dubai mieten – ohne Kaution, mit Lieferung." },
       { property: "og:type", content: "website" },
@@ -32,6 +33,7 @@ const featureIcons = { shield: ShieldCheck, clock: Clock, car: CarIcon, sparkles
 
 function HomePage() {
   const { language, t } = useLanguage();
+  const { fleet: { brands, cars, categories, featuredCars }, contact } = useSite();
   const [faqGroup, setFaqGroup] = useState(0);
   return (
     <div className="home">
@@ -125,7 +127,7 @@ function HomePage() {
           </ol>
           <div className="steps-actions">
             <Link to="/booking" search={{ car: "" }} className="btn btn-light">{t("Jetzt Buchung starten", "Start booking now")}<ArrowRight /></Link>
-            <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="btn btn-whatsapp"><MessageCircle />WhatsApp</a>
+            <a href={contact.whatsappUrl()} target="_blank" rel="noreferrer" className="btn btn-whatsapp"><MessageCircle />WhatsApp</a>
           </div>
         </div>
       </section>
@@ -174,7 +176,7 @@ function HomePage() {
           <h2>{t("Ihr Traumauto. In Dubai. Heute noch.", "Your dream car. In Dubai. Today.")}</h2>
           <p>{t("Schreiben Sie uns Ihr Wunschfahrzeug und Ihre Reisedaten – wir bestätigen Verfügbarkeit und Preis innerhalb weniger Minuten.", "Send us your dream car and travel dates – we confirm availability and price within minutes.")}</p>
           <div className="cta-actions">
-            <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="btn btn-whatsapp"><MessageCircle />{t("Per WhatsApp anfragen", "Ask on WhatsApp")}</a>
+            <a href={contact.whatsappUrl()} target="_blank" rel="noreferrer" className="btn btn-whatsapp"><MessageCircle />{t("Per WhatsApp anfragen", "Ask on WhatsApp")}</a>
             <Link to="/fleet" className="btn btn-outline">{t("Flotte ansehen", "View fleet")}<ArrowRight /></Link>
           </div>
         </div>
@@ -185,6 +187,7 @@ function HomePage() {
 
 function Hero() {
   const { language, t } = useLanguage();
+  const { brands, categories, fleetStats } = useSite().fleet;
   const navigate = useNavigate();
   const [category, setCategory] = useState("");
   const [brand, setBrand] = useState("");

@@ -14,3 +14,8 @@
 - [x] WhatsApp number set (+49 172 6023003)
 - [x] Phone +49 172 6023003, TikTok @ardaadagcii, Instagram removed
 - [ ] E-mail hidden for now – set `EMAIL` in `src/lib/site-data.ts` once the mailbox exists
+- [x] Secure admin dashboard at /admin (Lovable Cloud auth + Row Level Security), installable as app on iOS/Android
+- [x] Admin: hide/show cars, mark as rented, highlights, fixed prices, names, categories, km, DE/EN descriptions
+- [x] Admin: booking requests from the website (status, dates, price, commission, notes, call/WhatsApp), manual bookings
+- [x] Admin: markup %, exchange rate and contact details (WhatsApp, phone, e-mail, TikTok)
+- [ ] Optional: push notifications for new booking requests, photo upload for new cars

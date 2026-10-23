@@ -101,12 +101,15 @@ function CarPage() {
           <article className="vehicle-description">
             <h2>{t(`${carTitle(car)} mieten in Dubai`, `Rent ${carTitle(car)} in Dubai`)}</h2>
             <p className="lead">{carSummary(car, language)}</p>
-            {content.blocks.length > 0 && (
-              <div className="prose" lang="en">
-                {language === "de" && <p className="prose-note">{t("Original-Fahrzeugbeschreibung (Englisch):", "")}</p>}
+            {language === "de" && content.de.length > 0 && <div className="prose prose-de">{content.de.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>}
+            {content.blocks.length > 0 && (language === "en" ? (
+              <div className="prose" lang="en"><Blocks blocks={content.blocks} /></div>
+            ) : (
+              <details className="prose prose-original" lang="en">
+                <summary>Ausführliche Original-Beschreibung (Englisch)</summary>
                 <Blocks blocks={content.blocks} />
-              </div>
-            )}
+              </details>
+            ))}
             {content.faqs.length > 0 && (
               <div className="vehicle-faq" lang="en">
                 <h2>{t(`Häufige Fragen zum ${carTitle(car)}`, `${carTitle(car)} – FAQ`)}</h2>

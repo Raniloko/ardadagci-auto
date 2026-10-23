@@ -360,7 +360,9 @@ h1, h2, h3 { font-family: var(--display); font-stretch: 112%; letter-spacing: -.
 .vehicle-description h2 { margin: 0 0 18px; font-size: clamp(26px, 3vw, 40px); font-weight: 600; line-height: 1.05; }
 .vehicle-description .lead { margin: 0 0 30px; color: #e2e2de; font-size: 18px; }
 .prose { color: var(--muted); font-size: 15.5px; line-height: 1.75; }
-.prose-note { margin: 0 0 12px; padding-top: 24px; border-top: 1px solid var(--line); color: var(--faint)!important; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.prose-de { color: #d4d4d0; font-size: 16px; }
+.prose-original { margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); }
+.prose-original summary { margin-bottom: 14px; color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; }
 .prose h3 { margin: 32px 0 10px; color: var(--text); font-family: var(--display); font-size: 20px; font-weight: 600; }
 .prose p { margin: 0 0 14px; }
 .prose ul { margin: 0 0 16px; padding-left: 20px; list-style: disc; }

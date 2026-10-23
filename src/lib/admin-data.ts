@@ -56,7 +56,7 @@ export const signOut = () => supabase.auth.signOut();
 
 /* ---------- Queries ---------- */
 
-const keys = { overrides: ["admin", "overrides"], settings: ["admin", "settings"], bookings: ["admin", "bookings"] } as const;
+const keys = { overrides: ["admin", "overrides"], settings: ["admin", "settings"], bookings: ["admin", "bookings"], admins: ["admin", "admins"] } as const;
 
 export function useAdminOverrides() {
   return useQuery({
@@ -104,7 +104,55 @@ export function useBookings() {
   });
 }
 
+/** Admin accounts and open invites (via security-definer functions, admins only). */
+export function useAdmins() {
+  return useQuery({
+    queryKey: keys.admins,
+    queryFn: async () => {
+      const [admins, invites] = await Promise.all([supabase.rpc("list_admins"), supabase.rpc("list_admin_invites")]);
+      if (admins.error) throw admins.error;
+      if (invites.error) throw invites.error;
+      return { admins: admins.data, invites: invites.data };
+    },
+  });
+}
+
 /* ---------- Mutations ---------- */
+
+/** Creates a one-time invite and returns the plain code (it cannot be shown again). */
+export function useCreateInvite() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc("create_admin_invite");
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.admins }),
+  });
+}
+
+export function useRevokeInvite() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.rpc("revoke_admin_invite", { invite_id: id });
+      if (error) throw error;
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.admins }),
+  });
+}
+
+export function useRemoveAdmin() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase.rpc("remove_admin", { target: userId });
+      if (error) throw error;
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.admins }),
+  });
+}
 
 export type OverridePatch = Partial<Omit<TablesInsert<"car_overrides">, "slug" | "updated_at">>;
 

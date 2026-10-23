@@ -59,7 +59,7 @@ export function LoginScreen({ setupOpen, onDone }: { setupOpen: boolean; onDone:
         }
         const { data: ok, error: claimError } = await supabase.rpc("claim_admin", { setup_code: code });
         if (claimError) throw claimError;
-        if (!ok) throw new Error("Der Einrichtungscode ist ungültig oder abgelaufen.");
+        if (!ok) throw new Error("Der Code ist ungültig, abgelaufen oder wurde schon benutzt.");
         sessionStorage.removeItem("ardadagci-admin-setup-code");
         onDone();
         return;
@@ -76,7 +76,9 @@ export function LoginScreen({ setupOpen, onDone }: { setupOpen: boolean; onDone:
 
   const titles = {
     login: ["Admin-Bereich", "Melde dich an, um Website, Fahrzeuge und Reservierungen zu verwalten."],
-    setup: ["Admin einrichten", "Lege dein Admin-Konto an. Du brauchst dafür den einmaligen Einrichtungscode."],
+    setup: setupOpen
+      ? ["Admin einrichten", "Lege dein Admin-Konto an. Du brauchst dafür den einmaligen Einrichtungscode."]
+      : ["Neues Admin-Konto", "Du brauchst den Einladungscode, den du von einem Admin bekommen hast."],
     reset: ["Passwort vergessen", "Wir senden dir einen Link, mit dem du ein neues Passwort setzen kannst."],
   } as const;
 
@@ -90,19 +92,19 @@ export function LoginScreen({ setupOpen, onDone }: { setupOpen: boolean; onDone:
             <Field label="Passwort"><input type="password" autoComplete={mode === "setup" ? "new-password" : "current-password"} required minLength={mode === "setup" ? 8 : undefined} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={mode === "setup" ? "mindestens 8 Zeichen" : "••••••••"} /></Field>
           )}
           {mode === "setup" && (
-            <Field label="Einrichtungscode"><input required autoCapitalize="characters" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="XXXX-XXXX-XXXX" /></Field>
+            <Field label={setupOpen ? "Einrichtungscode" : "Einladungscode"}><input required autoCapitalize="characters" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value)} placeholder="XXXX-XXXX-XXXX" /></Field>
           )}
         </div>
         <button className="adm-btn block" disabled={busy}>{busy ? "Bitte warten …" : mode === "login" ? "Anmelden" : mode === "setup" ? "Konto einrichten" : "Link senden"}</button>
         {mode === "login" && <button type="button" className="adm-link" onClick={() => setMode("reset")}>Passwort vergessen?</button>}
         {mode !== "login" && <button type="button" className="adm-link" onClick={() => setMode("login")}>Zur Anmeldung</button>}
-        {mode === "login" && setupOpen && <button type="button" className="adm-link" onClick={() => setMode("setup")}>Erstes Admin-Konto einrichten</button>}
+        {mode === "login" && <button type="button" className="adm-link" onClick={() => setMode("setup")}>{setupOpen ? "Erstes Admin-Konto einrichten" : "Neues Admin-Konto mit Code"}</button>}
       </form>
     </AuthLayout>
   );
 }
 
-/** Signed in, but not (yet) an admin: claim with the setup code while setup is open, otherwise no access. */
+/** Signed in, but not (yet) an admin: unlock with the setup code (first admin) or an invite code. */
 export function NotAdminScreen({ auth, onDone }: { auth: Extract<AdminAuth, { status: "not-admin" }>; onDone: () => void }) {
   const [code, setCode] = useState(() => (typeof window !== "undefined" ? sessionStorage.getItem("ardadagci-admin-setup-code") ?? "" : ""));
   const [busy, setBusy] = useState(false);
@@ -113,22 +115,16 @@ export function NotAdminScreen({ auth, onDone }: { auth: Extract<AdminAuth, { st
     setError("");
     const { data, error: claimError } = await supabase.rpc("claim_admin", { setup_code: code });
     setBusy(false);
-    if (claimError || !data) return setError(claimError ? errorMessage(claimError) : "Der Einrichtungscode ist ungültig oder abgelaufen.");
+    if (claimError || !data) return setError(claimError ? errorMessage(claimError) : "Der Code ist ungültig, abgelaufen oder wurde schon benutzt.");
     sessionStorage.removeItem("ardadagci-admin-setup-code");
     onDone();
   }
-  if (!auth.setupOpen) {
-    return (
-      <AuthLayout title="Kein Zugriff" sub={`Das Konto ${auth.session.user.email ?? ""} hat keine Admin-Rechte.`}>
-        <button className="adm-btn block soft" onClick={() => signOut()}>Abmelden</button>
-      </AuthLayout>
-    );
-  }
+  const label = auth.setupOpen ? "Einrichtungscode" : "Einladungscode";
   return (
-    <AuthLayout title="Admin freischalten" sub={`Angemeldet als ${auth.session.user.email ?? ""}. Gib den Einrichtungscode ein, um dieses Konto zum Admin zu machen.`}>
+    <AuthLayout title="Admin freischalten" sub={`Angemeldet als ${auth.session.user.email ?? ""}. Dieses Konto hat noch keine Admin-Rechte – gib deinen ${label} ein, um es freizuschalten.`}>
       <form onSubmit={claim}>
         {error && <div className="adm-note error">{error}</div>}
-        <div className="adm-group"><Field label="Einrichtungscode"><input required autoCapitalize="characters" value={code} onChange={(e) => setCode(e.target.value)} placeholder="XXXX-XXXX-XXXX" /></Field></div>
+        <div className="adm-group"><Field label={label}><input required autoCapitalize="characters" value={code} onChange={(e) => setCode(e.target.value)} placeholder="XXXX-XXXX-XXXX" /></Field></div>
         <button className="adm-btn block" disabled={busy}>{busy ? "Bitte warten …" : "Freischalten"}</button>
         <button type="button" className="adm-link" onClick={() => signOut()}>Abmelden</button>
       </form>

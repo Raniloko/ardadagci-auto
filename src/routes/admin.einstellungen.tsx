@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { KeyRound, LogOut, Smartphone } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight, KeyRound, LogOut, Smartphone, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Field, LargeTitle, SaveBar, Section, TopBar, useToast } from "@/components/admin/ui";
 import { supabase } from "@/integrations/supabase/client";
@@ -118,6 +118,7 @@ function SettingsPage() {
 
       <Section title="Konto">
         <div className="adm-row"><div className="adm-row-main"><strong>Angemeldet als</strong><span>{email || "–"}</span></div></div>
+        <Link to="/admin/admins" className="adm-row"><span className="adm-row-icon" style={{ background: "var(--a-green)" }}><Users /></span><div className="adm-row-main"><strong>Admins verwalten</strong><span>Weitere Admins einladen oder entfernen</span></div><ChevronRight className="adm-chevron" /></Link>
         <button type="button" className="adm-row" onClick={changePassword}><span className="adm-row-icon"><KeyRound /></span><div className="adm-row-main"><strong>Passwort ändern</strong></div></button>
         <button type="button" className="adm-row" onClick={() => signOut()}><span className="adm-row-icon" style={{ background: "var(--a-red)" }}><LogOut /></span><div className="adm-row-main"><strong style={{ color: "var(--a-red)" }}>Abmelden</strong></div></button>
       </Section>

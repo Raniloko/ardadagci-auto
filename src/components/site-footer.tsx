@@ -27,7 +27,7 @@ export function SiteFooter() {
         <div>
           <h3>{t("Kontakt", "Contact")}</h3>
           <a href={`tel:${PHONE_NUMBER}`}><Phone />{PHONE_DISPLAY}</a>
-          <a href={`mailto:${EMAIL}`}><Mail />{EMAIL}</a>
+          {EMAIL && <a href={`mailto:${EMAIL}`}><Mail />{EMAIL}</a>}
           <span><MapPin />Dubai, {t("Vereinigte Arabische Emirate", "United Arab Emirates")}</span>
           <Link to="/booking" search={{ car: "" }}>{t("Reservierung anfragen", "Request a booking")}</Link>
         </div>

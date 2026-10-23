@@ -8,7 +8,8 @@ export const PHONE_NUMBER = "+491726023003";
 export const PHONE_DISPLAY = "+49 172 6023003";
 export const TIKTOK_HANDLE = "@ardaadagcii";
 export const TIKTOK_URL = "https://www.tiktok.com/@ardaadagcii";
-export const EMAIL = "hello@ardadagci.com";
+/** Contact e-mail – hidden on the site while empty (set it once the mailbox exists, e.g. "hello@ardadagci.com"). */
+export const EMAIL = "";
 export const whatsappUrl = (message = "Hallo ARDADAGCI, ich möchte ein Luxusfahrzeug in Dubai reservieren.") => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
 type FleetRecord = (typeof fleet)[number];

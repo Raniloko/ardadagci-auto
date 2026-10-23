@@ -3,7 +3,7 @@ import { brandTiles, categoryTiles, type CategoryId } from "./mkr-assets";
 import type { Photo } from "./images";
 import { customerPriceEur, feeEur } from "./pricing";
 
-export const WHATSAPP_NUMBER = "971501234567";
+export const WHATSAPP_NUMBER = "491726023003"; // +49 172 6023003
 export const PHONE_NUMBER = "+971589278720";
 export const EMAIL = "hello@ardadagci.com";
 export const whatsappUrl = (message = "Hallo ARDADAGCI, ich möchte ein Luxusfahrzeug in Dubai reservieren.") => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Instagram, Mail, MapPin, MessageCircle, Music2, Phone } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Music2, Phone } from "lucide-react";
 import { useLanguage } from "@/lib/language";
-import { brands, categories, EMAIL, PHONE_NUMBER, whatsappUrl } from "@/lib/site-data";
+import { brands, categories, EMAIL, PHONE_DISPLAY, PHONE_NUMBER, TIKTOK_HANDLE, TIKTOK_URL, whatsappUrl } from "@/lib/site-data";
 
 export function SiteFooter() {
   const { language, t } = useLanguage();
@@ -12,8 +12,7 @@ export function SiteFooter() {
           <Link to="/" className="brand-mark"><img src="/ardadagci-mark.png" alt="" width={260} height={192} /><span><strong>ARDADAGCI</strong><small>Dubai Car Rental</small></span></Link>
           <p>{t("Luxus- und Sportwagen in Dubai – ohne Kaution, mit Lieferung und persönlichem Service auf Deutsch.", "Luxury and sports cars in Dubai – no deposit, delivered, with personal service.")}</p>
           <div className="footer-social">
-            <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok"><Music2 /></a>
-            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram /></a>
+            <a href={TIKTOK_URL} target="_blank" rel="noreferrer" aria-label={`TikTok ${TIKTOK_HANDLE}`}><Music2 /></a>
             <a href={whatsappUrl()} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle /></a>
           </div>
         </div>
@@ -27,7 +26,7 @@ export function SiteFooter() {
         </div>
         <div>
           <h3>{t("Kontakt", "Contact")}</h3>
-          <a href={`tel:${PHONE_NUMBER}`}><Phone />{PHONE_NUMBER}</a>
+          <a href={`tel:${PHONE_NUMBER}`}><Phone />{PHONE_DISPLAY}</a>
           <a href={`mailto:${EMAIL}`}><Mail />{EMAIL}</a>
           <span><MapPin />Dubai, {t("Vereinigte Arabische Emirate", "United Arab Emirates")}</span>
           <Link to="/booking" search={{ car: "" }}>{t("Reservierung anfragen", "Request a booking")}</Link>

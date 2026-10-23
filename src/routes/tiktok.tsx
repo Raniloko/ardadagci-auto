@@ -3,7 +3,7 @@ import { ArrowUpRight, Play } from "lucide-react";
 import { PageIntro } from "@/components/page-intro";
 import { CarImage } from "@/components/car-image";
 import { useLanguage } from "@/lib/language";
-import { carTitle, featuredCars } from "@/lib/site-data";
+import { carTitle, featuredCars, TIKTOK_HANDLE, TIKTOK_URL } from "@/lib/site-data";
 
 export const Route = createFileRoute("/tiktok")({
   head: () => ({
@@ -23,7 +23,7 @@ function Page() {
   const { t } = useLanguage();
   return (
     <>
-      <PageIntro eyebrow="@ardadagci" title={t("Die Flotte in Bewegung.", "See the fleet in motion.")} copy={t("Walkarounds, Kaltstarts, Liefertage und ein genauer Blick auf Dubais aufregendste Autos.", "Walkarounds, cold starts, delivery days and a closer look at Dubai's most exciting cars.")} />
+      <PageIntro eyebrow={TIKTOK_HANDLE} title={t("Die Flotte in Bewegung.", "See the fleet in motion.")} copy={t("Walkarounds, Kaltstarts, Liefertage und ein genauer Blick auf Dubais aufregendste Autos.", "Walkarounds, cold starts, delivery days and a closer look at Dubai's most exciting cars.")} />
       <section className="site-shell section">
         <div className="social-grid">
           {featuredCars.slice(0, 8).map((car, i) => (
@@ -33,7 +33,7 @@ function Page() {
             </Link>
           ))}
         </div>
-        <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" className="text-link social-follow">{t("@ardadagci folgen", "Follow @ardadagci")}<ArrowUpRight /></a>
+        <a href={TIKTOK_URL} target="_blank" rel="noreferrer" className="text-link social-follow">{t(`${TIKTOK_HANDLE} folgen`, `Follow ${TIKTOK_HANDLE}`)}<ArrowUpRight /></a>
       </section>
     </>
   );

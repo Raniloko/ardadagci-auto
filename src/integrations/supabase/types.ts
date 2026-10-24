@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_invites: {
+        Row: {
+          code_sha256: string
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code_sha256: string
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code_sha256?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       admin_setup: {
         Row: {
           code_sha256: string
@@ -193,12 +223,22 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       list_admin_invites: {
         Args: never
-        Returns: { created_at: string; expires_at: string; id: string }[]
+        Returns: {
+          created_at: string
+          expires_at: string
+          id: string
+        }[]
       }
       list_admins: {
         Args: never
-        Returns: { created_at: string; email: string; is_me: boolean; user_id: string }[]
+        Returns: {
+          created_at: string
+          email: string
+          is_me: boolean
+          user_id: string
+        }[]
       }
+      normalize_admin_code: { Args: { code: string }; Returns: string }
       remove_admin: { Args: { target: string }; Returns: undefined }
       revoke_admin_invite: { Args: { invite_id: string }; Returns: undefined }
     }

@@ -9,7 +9,8 @@ export type PricingSettings = { markupTiers: MarkupTier[]; aedPerEur: number };
 export type Currency = "AED" | "EUR";
 
 export const DEFAULT_MARKUP_TIERS: MarkupTier[] = [
-  { fromAed: 0, addAed: 500 },
+  { fromAed: 0, addAed: 250 },
+  { fromAed: 500, addAed: 500 },
   { fromAed: 1000, addAed: 650 },
   { fromAed: 3000, addAed: 850 },
   { fromAed: 6000, addAed: 1000 },

@@ -9,7 +9,7 @@
 - [x] Prefilled WhatsApp booking links and floating contact actions
 - [x] Responsive preview validation
 - [x] Full MKR (Masterkey Rent A Car) fleet import: 175 vehicles, galleries, specs, descriptions and FAQs (`scripts/sync-mkr-fleet.py`)
-- [x] Commission pricing: MKR price + fixed AED markup per price class (500–1.000 AED), shown in AED with EUR switch (`src/lib/pricing.ts`)
+- [x] Commission pricing: MKR price + fixed AED markup per price class (250–1.000 AED), shown in AED with EUR switch (`src/lib/pricing.ts`)
 - [x] Complete UI redesign: cinematic hero, brand/category discovery, category rails, filters with URL state, detail gallery, booking estimate
 - [x] WhatsApp number set (+49 172 6023003)
 - [x] Phone +49 172 6023003, TikTok @ardaadagcii, Instagram removed

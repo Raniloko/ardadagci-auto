@@ -16,13 +16,17 @@ export type AdminAuth =
   | { status: "not-admin"; session: Session; setupOpen: boolean }
   | { status: "admin"; session: Session };
 
+// Set when a password reset link was opened; survives effect re-runs until the new password is saved.
+let recoveryPending = false;
+
 /** Session + admin check. Every write is additionally enforced by Row Level Security in the database. */
 export function useAdminAuth() {
   const [auth, setAuth] = useState<AdminAuth>({ status: "loading" });
+  const [linkError, setLinkError] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
   useEffect(() => {
     let alive = true;
-    let recovery = typeof window !== "undefined" && window.location.hash.includes("type=recovery");
+    if (typeof window !== "undefined" && window.location.hash.includes("type=recovery")) recoveryPending = true;
     async function evaluate(session: Session | null) {
       if (!alive) return;
       if (!session) {
@@ -30,7 +34,7 @@ export function useAdminAuth() {
         if (alive) setAuth({ status: "signed-out", setupOpen: Boolean(data), recovery: false });
         return;
       }
-      if (recovery) {
+      if (recoveryPending) {
         setAuth({ status: "recovery", session });
         return;
       }
@@ -38,10 +42,30 @@ export function useAdminAuth() {
       if (!alive) return;
       setAuth(isAdmin ? { status: "admin", session } : { status: "not-admin", session, setupOpen: Boolean(setupOpen) });
     }
-    supabase.auth.getSession().then(({ data }) => evaluate(data.session));
+    // Links from our Resend e-mails: /admin?token_hash=…&type=signup|magiclink|recovery
+    async function start() {
+      const params = new URLSearchParams(window.location.search);
+      const tokenHash = params.get("token_hash");
+      const type = params.get("type");
+      if (tokenHash && (type === "signup" || type === "magiclink" || type === "recovery")) {
+        window.history.replaceState(null, "", "/admin");
+        if (type === "recovery") recoveryPending = true;
+        const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+        if (!alive) return;
+        if (error || !data.session) {
+          recoveryPending = false;
+          setLinkError("Der Link ist abgelaufen oder wurde schon benutzt. Bitte fordere einen neuen an.");
+        } else {
+          return evaluate(data.session);
+        }
+      }
+      const { data } = await supabase.auth.getSession();
+      return evaluate(data.session);
+    }
+    void start();
     const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") recovery = true;
-      if (event === "USER_UPDATED") recovery = false;
+      if (event === "PASSWORD_RECOVERY") recoveryPending = true;
+      if (event === "USER_UPDATED") recoveryPending = false;
       if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "PASSWORD_RECOVERY" || event === "USER_UPDATED") void evaluate(session);
     });
     return () => {
@@ -49,7 +73,7 @@ export function useAdminAuth() {
       listener.subscription.unsubscribe();
     };
   }, [version]);
-  return { auth, refresh: () => setVersion((v) => v + 1) };
+  return { auth, linkError, refresh: () => setVersion((v) => v + 1) };
 }
 
 export const signOut = () => supabase.auth.signOut();

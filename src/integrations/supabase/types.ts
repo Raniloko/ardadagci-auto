@@ -77,6 +77,27 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_email_log: {
+        Row: {
+          created_at: string
+          email_sha256: string
+          id: number
+          kind: string
+        }
+        Insert: {
+          created_at?: string
+          email_sha256: string
+          id?: never
+          kind: string
+        }
+        Update: {
+          created_at?: string
+          email_sha256?: string
+          id?: never
+          kind?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           admin_notes: string | null

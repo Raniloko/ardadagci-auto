@@ -93,11 +93,11 @@ export function InstallProvider({ children, autoShow }: { children: ReactNode; a
     (window as InstallWindow).__admInstall = null;
     setDeferred(null);
     setVisible(false);
+    close();
     if (choice.outcome === "accepted") {
       toast("App wird installiert – du findest sie gleich auf deinem Startbildschirm");
       setMode("none");
     } else {
-      close();
       setMode(isMobile() ? "manual" : "none");
     }
   }

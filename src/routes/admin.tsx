@@ -3,6 +3,7 @@ import { CalendarCheck, CarFront, LayoutGrid, Settings } from "lucide-react";
 import { useEffect } from "react";
 import adminCss from "../admin.css?url";
 import { LoginScreen, NotAdminScreen, RecoveryScreen } from "@/components/admin/auth-screens";
+import { INSTALL_CAPTURE_SCRIPT, InstallProvider } from "@/components/admin/install-prompt";
 import { Spinner, ToastProvider } from "@/components/admin/ui";
 import { useAdminAuth, useBookings } from "@/lib/admin-data";
 
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/admin")({
       { rel: "manifest", href: "/admin.webmanifest" },
       { rel: "apple-touch-icon", href: "/admin-icon-180.png" },
     ],
+    scripts: [{ children: INSTALL_CAPTURE_SCRIPT }],
   }),
   component: AdminLayout,
 });
@@ -37,11 +39,13 @@ function AdminLayout() {
   return (
     <div className="adm">
       <ToastProvider>
-        {auth.status === "loading" && <Spinner />}
-        {auth.status === "signed-out" && <LoginScreen setupOpen={auth.setupOpen} notice={linkError} onDone={refresh} />}
-        {auth.status === "recovery" && <RecoveryScreen onDone={refresh} />}
-        {auth.status === "not-admin" && <NotAdminScreen auth={auth} onDone={refresh} />}
-        {auth.status === "admin" && <AdminShell />}
+        <InstallProvider autoShow={auth.status !== "loading" && auth.status !== "recovery"}>
+          {auth.status === "loading" && <Spinner />}
+          {auth.status === "signed-out" && <LoginScreen setupOpen={auth.setupOpen} notice={linkError} onDone={refresh} />}
+          {auth.status === "recovery" && <RecoveryScreen onDone={refresh} />}
+          {auth.status === "not-admin" && <NotAdminScreen auth={auth} onDone={refresh} />}
+          {auth.status === "admin" && <AdminShell />}
+        </InstallProvider>
       </ToastProvider>
     </div>
   );

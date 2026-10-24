@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, KeyRound, LogOut, Smartphone, Users } from "lucide-react";
+import { ChevronRight, KeyRound, LogOut, Mail, Smartphone, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Field, LargeTitle, SaveBar, Section, TopBar, useToast } from "@/components/admin/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { errorMessage, signOut, useAdminFleet, useAdminSettings, useSaveSettings } from "@/lib/admin-data";
+import { sendTestEmail } from "@/lib/auth-email";
 import { customerPriceAed, formatAed, formatMoney, type MarkupTier } from "@/lib/pricing";
 import type { SiteSettings } from "@/lib/site-config";
 import { carTitle, formatPhone } from "@/lib/site-data";
@@ -33,6 +34,7 @@ function SettingsPage() {
   const saved = useMemo(() => (settings.data ? toDraft(settings.data) : null), [settings.data]);
   const [draft, setDraft] = useState<Draft | null>(saved);
   const [email, setEmail] = useState("");
+  const [mailStatus, setMailStatus] = useState<string | null>(null);
   useEffect(() => setDraft(saved), [saved]);
   useEffect(() => { supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? "")); }, []);
   if (!draft || !saved) return <><TopBar /><LargeTitle>Einstellungen</LargeTitle><p style={{ color: "var(--a-sub)" }}>Lädt …</p></>;
@@ -61,6 +63,14 @@ function SettingsPage() {
       { markupTiers: tiers, aedPerEur: rate, whatsappNumber: whatsapp, phoneNumber: phone, email: draft.email.trim(), tiktokUrl: draft.tiktok.trim() },
       { onSuccess: () => toast("Gespeichert – auf der Website in ca. 30 Sekunden sichtbar"), onError: (error) => toast(errorMessage(error), true) },
     );
+  }
+
+  async function testMail() {
+    setMailStatus("Sendet …");
+    const { data } = await supabase.auth.getSession();
+    const result = await sendTestEmail({ data: { accessToken: data.session?.access_token ?? "" } }).catch((error: unknown) => ({ ok: false as const, message: errorMessage(error) }));
+    setMailStatus(result.ok ? `Gesendet an ${result.to} (Absender: ${result.from})` : `Fehler: ${result.message}`);
+    toast(result.ok ? "Test-E-Mail gesendet" : "E-Mail konnte nicht gesendet werden", !result.ok);
   }
 
   async function changePassword() {
@@ -120,6 +130,7 @@ function SettingsPage() {
         <div className="adm-row"><div className="adm-row-main"><strong>Angemeldet als</strong><span>{email || "–"}</span></div></div>
         <Link to="/admin/admins" className="adm-row"><span className="adm-row-icon" style={{ background: "var(--a-green)" }}><Users /></span><div className="adm-row-main"><strong>Admins verwalten</strong><span>Weitere Admins einladen oder entfernen</span></div><ChevronRight className="adm-chevron" /></Link>
         <button type="button" className="adm-row" onClick={changePassword}><span className="adm-row-icon"><KeyRound /></span><div className="adm-row-main"><strong>Passwort ändern</strong></div></button>
+        <button type="button" className="adm-row" onClick={testMail}><span className="adm-row-icon" style={{ background: "var(--a-orange)" }}><Mail /></span><div className="adm-row-main"><strong>Test-E-Mail senden</strong><span style={{ whiteSpace: "normal" }}>{mailStatus ?? "Prüft den Versand über Resend"}</span></div></button>
         <button type="button" className="adm-row" onClick={() => signOut()}><span className="adm-row-icon" style={{ background: "var(--a-red)" }}><LogOut /></span><div className="adm-row-main"><strong style={{ color: "var(--a-red)" }}>Abmelden</strong></div></button>
       </Section>
 

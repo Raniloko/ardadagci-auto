@@ -1,6 +1,7 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { errorMessage, signOut, type AdminAuth } from "@/lib/admin-data";
+import { registerAdmin, requestPasswordReset, type AuthEmailResult } from "@/lib/auth-email";
 import { Field } from "./ui";
 
 function AuthLayout({ title, sub, children }: { title: string; sub: string; children: ReactNode }) {
@@ -18,7 +19,13 @@ function AuthLayout({ title, sub, children }: { title: string; sub: string; chil
   );
 }
 
-const redirectTo = () => `${window.location.origin}/admin`;
+const EMAIL_ERRORS: Record<Extract<AuthEmailResult, { ok: false }>["error"], string> = {
+  invalid: "Bitte eine gültige E-Mail und ein Passwort mit mindestens 8 Zeichen eingeben.",
+  code: "Der Code ist ungültig, abgelaufen oder wurde schon benutzt.",
+  exists: "Für diese E-Mail gibt es schon ein Konto – bitte unten anmelden.",
+  rate: "Zu viele Versuche – bitte in 15 Minuten erneut versuchen.",
+  send: "Die E-Mail konnte gerade nicht gesendet werden. Bitte später erneut versuchen.",
+};
 
 function translate(message: string) {
   if (/invalid login credentials/i.test(message)) return "E-Mail oder Passwort ist falsch.";
@@ -29,13 +36,13 @@ function translate(message: string) {
   return message;
 }
 
-export function LoginScreen({ setupOpen, onDone }: { setupOpen: boolean; onDone: () => void }) {
+export function LoginScreen({ setupOpen, notice = null, onDone }: { setupOpen: boolean; notice?: string | null; onDone: () => void }) {
   const [mode, setMode] = useState<"login" | "setup" | "reset">(setupOpen ? "setup" : "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(null);
+  const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(notice ? { text: notice, error: true } : null);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -43,20 +50,22 @@ export function LoginScreen({ setupOpen, onDone }: { setupOpen: boolean; onDone:
     setMessage(null);
     try {
       if (mode === "reset") {
-        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: redirectTo() });
-        if (error) throw error;
-        setMessage({ text: "Falls ein Konto existiert, wurde ein Link zum Zurücksetzen gesendet." });
+        const result = await requestPasswordReset({ data: { email: email.trim() } });
+        if (!result.ok) throw new Error(EMAIL_ERRORS[result.error]);
+        setMessage({ text: "Falls ein Konto existiert, ist ein Link zum Zurücksetzen unterwegs. Bitte schau auch im Spam-Ordner nach." });
         return;
       }
       if (mode === "setup") {
         sessionStorage.setItem("ardadagci-admin-setup-code", code);
-        let { data, error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: redirectTo() } });
-        if (error && /already registered/i.test(error.message)) ({ data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password }));
-        if (error) throw error;
-        if (!data.session) {
-          setMessage({ text: "Fast geschafft: Bitte bestätige deine E-Mail über den Link im Postfach und melde dich danach hier mit dem gleichen Code an." });
+        const result = await registerAdmin({ data: { email: email.trim(), password, code } });
+        if (!result.ok && result.error !== "exists") throw new Error(EMAIL_ERRORS[result.error]);
+        if (result.ok) {
+          setMessage({ text: "Fast geschafft: Wir haben dir eine E-Mail geschickt. Bestätige deine Adresse über den Button darin – danach bist du direkt im Dashboard." });
           return;
         }
+        // Account exists already: sign in and unlock it with the code.
+        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+        if (error) throw new Error(EMAIL_ERRORS.exists);
         const { data: ok, error: claimError } = await supabase.rpc("claim_admin", { setup_code: code });
         if (claimError) throw claimError;
         if (!ok) throw new Error("Der Code ist ungültig, abgelaufen oder wurde schon benutzt.");
@@ -109,8 +118,15 @@ export function NotAdminScreen({ auth, onDone }: { auth: Extract<AdminAuth, { st
   const [code, setCode] = useState(() => (typeof window !== "undefined" ? sessionStorage.getItem("ardadagci-admin-setup-code") ?? "" : ""));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  async function claim(e: FormEvent) {
-    e.preventDefault();
+  const autoClaimed = useRef(false);
+  // Coming back from the confirmation e-mail on the same device: unlock right away with the remembered code.
+  useEffect(() => {
+    if (autoClaimed.current || !code) return;
+    autoClaimed.current = true;
+    void claim();
+  }, []);
+  async function claim(e?: FormEvent) {
+    e?.preventDefault();
     setBusy(true);
     setError("");
     const { data, error: claimError } = await supabase.rpc("claim_admin", { setup_code: code });

@@ -29,7 +29,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLayout() {
-  const { auth, refresh } = useAdminAuth();
+  const { auth, linkError, refresh } = useAdminAuth();
   useEffect(() => {
     // Installable app (iOS "Zum Home-Bildschirm", Android "App installieren").
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/admin-sw.js", { scope: "/admin" }).catch(() => undefined);
@@ -38,7 +38,7 @@ function AdminLayout() {
     <div className="adm">
       <ToastProvider>
         {auth.status === "loading" && <Spinner />}
-        {auth.status === "signed-out" && <LoginScreen setupOpen={auth.setupOpen} onDone={refresh} />}
+        {auth.status === "signed-out" && <LoginScreen setupOpen={auth.setupOpen} notice={linkError} onDone={refresh} />}
         {auth.status === "recovery" && <RecoveryScreen onDone={refresh} />}
         {auth.status === "not-admin" && <NotAdminScreen auth={auth} onDone={refresh} />}
         {auth.status === "admin" && <AdminShell />}

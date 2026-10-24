@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Banknote, CalendarCheck, CarFront, ChevronRight, EyeOff, Inbox, Plus, Smartphone, TrendingUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Banknote, CalendarCheck, CarFront, ChevronRight, EyeOff, Inbox, Plus, TrendingUp } from "lucide-react";
+import { useInstall } from "@/components/admin/install-prompt";
 import { Empty, LargeTitle, Section, StatusPill, TopBar } from "@/components/admin/ui";
 import { dateDe, days, relativeTime, useAdminFleet, useBookings } from "@/lib/admin-data";
 import { formatAed, formatMoney } from "@/lib/pricing";
@@ -66,21 +66,13 @@ function Stat({ icon, label, value, hint, to }: { icon: React.ReactNode; label: 
 
 /** Shown in the browser until the dashboard is installed on the home screen. */
 function InstallHint() {
-  const [show, setShow] = useState(false);
-  const [ios, setIos] = useState(false);
-  useEffect(() => {
-    const standalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as Navigator & { standalone?: boolean }).standalone;
-    let dismissed = false;
-    try { dismissed = localStorage.getItem("ardadagci-admin-install-hint") === "hidden"; } catch { /* storage blocked */ }
-    setIos(/iphone|ipad|ipod/i.test(navigator.userAgent));
-    setShow(!standalone && !dismissed && window.innerWidth < 900);
-  }, []);
-  if (!show) return null;
+  const { mode, installed, open } = useInstall();
+  if (installed || mode === "none") return null;
   return (
-    <div className="adm-note">
-      <strong><Smartphone style={{ width: 16, height: 16, verticalAlign: "-3px", marginRight: 6 }} />Als App installieren</strong>
-      {ios ? "In Safari unten auf „Teilen“ tippen und „Zum Home-Bildschirm“ wählen." : "Im Browser-Menü (⋮) „App installieren“ bzw. „Zum Startbildschirm hinzufügen“ wählen."}{" "}
-      <button type="button" className="adm-link" style={{ padding: 0 }} onClick={() => { try { localStorage.setItem("ardadagci-admin-install-hint", "hidden"); } catch { /* storage blocked */ } setShow(false); }}>Ausblenden</button>
-    </div>
+    <button type="button" className="adm-install-card" onClick={open}>
+      <img src="/admin-icon-192.png" alt="" width={44} height={44} />
+      <span><strong>Als App installieren</strong><small>Mit eigenem Symbol auf dem Startbildschirm</small></span>
+      <em>{mode === "prompt" ? "Installieren" : "Anleitung"}</em>
+    </button>
   );
 }

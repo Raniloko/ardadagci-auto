@@ -175,3 +175,37 @@ button.adm-row:active, a.adm-row:active { background: var(--a-fill); }
   .adm-stats { grid-template-columns: repeat(4, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { .adm *, .adm *::before, .adm *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Install as app: bottom sheet (phones) / dialog (desktop) */
+.adm-sheet-backdrop { position: fixed; inset: 0; z-index: 70; display: flex; align-items: flex-end; justify-content: center; background: rgb(0 0 0 / .4); animation: adm-fade .2s ease; }
+.adm-sheet { position: relative; width: min(100%, 520px); padding: 10px 20px calc(var(--a-safe-bottom) + 20px); border-radius: 22px 22px 0 0; background: var(--a-card); color: var(--a-text); box-shadow: 0 -10px 40px rgb(0 0 0 / .25); animation: adm-sheet-up .32s cubic-bezier(.2, .9, .3, 1); }
+.adm-sheet-handle { display: block; width: 38px; height: 5px; margin: 0 auto 14px; border-radius: 999px; background: var(--a-fill); }
+.adm-sheet-close { position: absolute; top: 14px; right: 14px; width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 999px; background: var(--a-fill); color: var(--a-sub); cursor: pointer; }
+.adm-sheet-close svg { width: 16px; height: 16px; }
+.adm-install-app { display: flex; align-items: center; gap: 14px; margin: 4px 0 16px; }
+.adm-install-app img { width: 64px; height: 64px; border-radius: 15px; box-shadow: 0 4px 14px rgb(0 0 0 / .18); }
+.adm-install-app strong { display: block; font-size: 19px; font-weight: 700; }
+.adm-install-app span { color: var(--a-sub); font-size: 14px; }
+.adm-install-lead { margin: 0 0 14px; font-size: 16px; line-height: 1.45; }
+.adm-install-points { display: grid; gap: 10px; margin: 0 0 22px; padding: 0; list-style: none; color: var(--a-sub); font-size: 15px; }
+.adm-install-points li { display: flex; align-items: center; gap: 10px; }
+.adm-install-points svg { width: 20px; height: 20px; color: var(--a-green); }
+.adm-install-steps { display: grid; gap: 12px; margin: 0 0 22px; padding: 14px; border-radius: 14px; background: var(--a-bg); list-style: none; font-size: 15px; line-height: 1.45; }
+.adm-install-steps li { display: flex; align-items: flex-start; gap: 12px; }
+.adm-step-no { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 999px; background: var(--a-primary); color: var(--a-on-primary); font-size: 13px; font-weight: 700; }
+.adm-step-icon { display: inline-block; width: 18px; height: 18px; margin: 0 2px; vertical-align: -3px; color: var(--a-blue); }
+.adm-sheet-later { margin-top: 8px; background: none; }
+.adm-install-card { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0 0 18px; padding: 12px 14px; border: 0; border-radius: var(--a-radius); background: var(--a-card); color: var(--a-text); text-align: left; cursor: pointer; }
+.adm-install-card img { width: 44px; height: 44px; border-radius: 11px; }
+.adm-install-card span { flex: 1; display: grid; gap: 2px; }
+.adm-install-card strong { font-size: 16px; font-weight: 600; }
+.adm-install-card small { color: var(--a-sub); font-size: 13px; }
+.adm-install-card em { padding: 7px 14px; border-radius: 999px; background: var(--a-blue); color: #fff; font-size: 14px; font-style: normal; font-weight: 600; }
+@media (min-width: 700px) {
+  .adm-sheet-backdrop { align-items: center; }
+  .adm-sheet { border-radius: 22px; padding-bottom: 22px; }
+  .adm-sheet-handle { display: none; }
+}
+@keyframes adm-sheet-up { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes adm-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .adm-sheet, .adm-sheet-backdrop { animation: none; } }

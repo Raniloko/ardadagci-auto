@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, KeyRound, LogOut, Mail, Smartphone, Users } from "lucide-react";
+import { CheckCircle2, ChevronRight, Download, KeyRound, LogOut, Mail, Smartphone, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useInstall } from "@/components/admin/install-prompt";
 import { Field, LargeTitle, SaveBar, Section, TopBar, useToast } from "@/components/admin/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { errorMessage, signOut, useAdminFleet, useAdminSettings, useSaveSettings } from "@/lib/admin-data";
@@ -35,6 +36,7 @@ function SettingsPage() {
   const [draft, setDraft] = useState<Draft | null>(saved);
   const [email, setEmail] = useState("");
   const [mailStatus, setMailStatus] = useState<string | null>(null);
+  const install = useInstall();
   useEffect(() => setDraft(saved), [saved]);
   useEffect(() => { supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? "")); }, []);
   if (!draft || !saved) return <><TopBar /><LargeTitle>Einstellungen</LargeTitle><p style={{ color: "var(--a-sub)" }}>Lädt …</p></>;
@@ -135,6 +137,11 @@ function SettingsPage() {
       </Section>
 
       <Section title="App auf dem Handy" foot="Das Dashboard startet danach wie eine App – ohne App Store, mit eigenem Symbol.">
+        {install.installed ? (
+          <div className="adm-row"><span className="adm-row-icon" style={{ background: "var(--a-green)" }}><CheckCircle2 /></span><div className="adm-row-main"><strong>Als App installiert</strong><span>Du nutzt gerade die App-Version</span></div></div>
+        ) : install.mode !== "none" && (
+          <button type="button" className="adm-row" onClick={install.open}><span className="adm-row-icon" style={{ background: "var(--a-blue)" }}><Download /></span><div className="adm-row-main"><strong style={{ color: "var(--a-blue)" }}>App installieren</strong><span>{install.mode === "prompt" ? "Mit einem Tipp auf den Startbildschirm" : "Schritt-für-Schritt-Anleitung"}</span></div><ChevronRight className="adm-chevron" /></button>
+        )}
         <div className="adm-row"><span className="adm-row-icon"><Smartphone /></span><div className="adm-row-main"><strong>iPhone (Safari)</strong><span style={{ whiteSpace: "normal" }}>„Teilen“ → „Zum Home-Bildschirm“</span></div></div>
         <div className="adm-row"><span className="adm-row-icon" style={{ background: "var(--a-green)" }}><Smartphone /></span><div className="adm-row-main"><strong>Android (Chrome)</strong><span style={{ whiteSpace: "normal" }}>Menü ⋮ → „App installieren“</span></div></div>
       </Section>
